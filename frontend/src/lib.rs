@@ -81,12 +81,16 @@ impl Component for CryptoAnalyticsApp {
         if let Some(cryptos) = self.cryptos.clone() {
             html! {
             <div class=classes!("container")>
+            <div>
                 <CryptoGeneral name="Bitcoin" image="btc.svg" price=cryptos.bitcoin id="bitcoin"/>
                 <CryptoGeneral name="Ethereum" image="eth.svg" price=cryptos.ethereum id="ethereum"/>
                 <CryptoGeneral name="Chain Link" image="link.svg" price=cryptos.chain_link id ="chainlink"/>
+            </div>
+            <div>
                 <CryptoGeneral name="Litecoin" image="ltc.svg" price=cryptos.litecoin id = "litecoin"/>
                 <CryptoGeneral name="Bitcoin Cash" image="bch.svg" price=cryptos.bitcoin_cash id ="bitcoin-cash"/>
                 <CryptoGeneral name="Unit Protocol Duck" image="duck.png" price=cryptos.unit_protocol_duck id="unit-protocol-duck"/>
+                </div>
             </div>
             }
         } else {

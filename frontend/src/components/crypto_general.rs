@@ -1,4 +1,4 @@
-use chrono::{self, Datelike, Duration, TimeZone};
+use chrono::{self, Duration};
 use thousands::{digits, Separable, SeparatorPolicy};
 use yew::format::{Json, Nothing};
 use yew::services::fetch::{FetchTask, Request, Response};
@@ -6,7 +6,7 @@ use yew::services::{ConsoleService, FetchService};
 use yew::Properties;
 use yew::{classes, html, Component, ComponentLink, Html, ShouldRender};
 
-use crate::models::history_price::{self, HistoryCryptoData};
+use crate::models::history_price::{self};
 use crate::models::price;
 
 #[derive(Properties, Clone, PartialEq)]
@@ -52,7 +52,7 @@ impl CryptoGeneral {
         history_price_date.format("%d-%m-%Y").to_string()
     }
 
-    pub fn handle_history_price(&self, current_price: f64, mode: &str) -> (String, String) {
+    pub fn handle_history_price(&self, current_price: f64, mode: &str) -> (String, String, String) {
         if let Some(history) = &self.history_price {
             let history_price = match mode {
                 "btc" => history.market_data.current_price.btc,
@@ -60,12 +60,18 @@ impl CryptoGeneral {
             };
 
             let price_diff = current_price - history_price;
+            let price_change = (price_diff / history_price) * 100.0;
             (
                 self.format_price(price_diff, 6),
+                format!("({:.2}%)", price_change),
                 self.handle_price_change(price_diff),
             )
         } else {
-            (String::from("loading..."), String::from("black"))
+            (
+                String::from("loading..."),
+                String::from(""),
+                String::from("black"),
+            )
         }
     }
 }
@@ -85,18 +91,30 @@ impl Component for CryptoGeneral {
 
     fn view(&self) -> Html {
         let properties = self.properties.clone();
+        // current price
         let price_change_direction = self.handle_price_change(properties.price.eur_24h_change);
         let formatted_price = self.format_price(properties.price.eur, 2);
         let formatted_change = format!("{:.2} %", properties.price.eur_24h_change);
 
-        let formatted_price_eth = self.format_price(properties.price.eth, 6);
+        // against BTC/ETH
         let formatted_price_btc = self.format_price(properties.price.btc, 6);
+        let formatted_change_btc = format!(" ({:.2}%) ", properties.price.eth_24h_change);
+        let formatted_price_eth = self.format_price(properties.price.eth, 6);
+        let formatted_change_eth = format!(" ({:.2}%) ", properties.price.eth_24h_change);
 
-        let (formatted_history_diff_btc, formatted_history_change_btc) =
-            self.handle_history_price(self.properties.price.btc, "btc");
-        let (formatted_history_diff_eth, formatted_history_change_eth) =
-            self.handle_history_price(self.properties.price.eth, "eth");
+        // against BTC/ETH historical
+        let (
+            formatted_history_diff_btc,
+            formatted_history_change_btc,
+            formatted_history_change_direction_btc,
+        ) = self.handle_history_price(self.properties.price.btc, "btc");
+        let (
+            formatted_history_diff_eth,
+            formatted_history_change_eth,
+            formatted_history_change_direction_eth,
+        ) = self.handle_history_price(self.properties.price.eth, "eth");
 
+        // construct HTML
         html! {
             <div class="crypto-general-container">
                 <div class="current_price align_center">
@@ -105,14 +123,14 @@ impl Component for CryptoGeneral {
                     <span class=classes!(price_change_direction.clone(), "change")>{formatted_change}</span>
                 </div>
 
-                <div class="against_eth align_center">
-                    <span class=classes!("against_other")>{"ETH: "}{formatted_price_eth}</span>
-                    <span class=classes!(formatted_history_change_eth, "against_other")>{" m: "}{formatted_history_diff_eth}</span>
+                <div class="against_btc align_center">
+                    <span class=classes!("against_other")>{"BTC: "}{formatted_price_btc}{formatted_change_btc}</span>
+                    <span class=classes!(formatted_history_change_direction_btc, "against_other")>{" m: "}{formatted_history_diff_btc}{formatted_history_change_btc}</span>
                 </div>
 
-                <div class="against_btc align_center">
-                    <span class=classes!("against_other")>{"BTC: "}{formatted_price_btc}</span>
-                    <span class=classes!(formatted_history_change_btc, "against_other")>{" m: "}{formatted_history_diff_btc}</span>
+                <div class="against_eth align_center">
+                    <span class=classes!("against_other")>{"ETH: "}{formatted_price_eth}{formatted_change_eth}</span>
+                    <span class=classes!(formatted_history_change_direction_eth, "against_other")>{" m: "}{formatted_history_diff_eth}{formatted_history_change_eth}</span>
                 </div>
             </div>
         }
