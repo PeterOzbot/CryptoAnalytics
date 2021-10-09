@@ -16,5 +16,5 @@ serde_derive = "1"
 serde_json = "1"
 anyhow = "1"
 yew-router = "0.15.0"
-
+chrono = { version = "0.4", features = ["wasmbind"] }
 thousands = "0.2.0"

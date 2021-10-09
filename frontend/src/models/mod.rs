@@ -1,3 +1,2 @@
 pub mod price;
-pub mod cryptos;
-pub mod msg;
+pub mod history_price;

@@ -14,10 +14,8 @@ use yew::{
 };
 
 use components::crypto_general::CryptoGeneral;
-use models::cryptos::Cryptos;
-use models::msg::Msg;
+use models::price::*;
 
-mod app_route;
 mod components;
 mod models;
 
@@ -45,7 +43,7 @@ impl Component for CryptoAnalyticsApp {
                 self.cryptos = None;
 
                 // url for request
-                let url_request = "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,litecoin,ethereum,bitcoin-cash,chainlink&vs_currencies=EUR&include_24hr_change=true";
+                let url_request = "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,litecoin,ethereum,bitcoin-cash,chainlink,unit-protocol-duck&vs_currencies=EUR,BTC,ETH&include_24hr_change=true";
                 ConsoleService::info(&format!("Loading data: {:?}", url_request));
 
                 // create request
@@ -68,6 +66,7 @@ impl Component for CryptoAnalyticsApp {
             Msg::Resp(resp) => {
                 if let Ok(data) = resp {
                     self.cryptos = Some(data);
+                    ConsoleService::info(&format!("Cryptos: {:?}", self.cryptos));
                 }
             }
         }
@@ -80,14 +79,14 @@ impl Component for CryptoAnalyticsApp {
 
     fn view(&self) -> Html {
         if let Some(cryptos) = self.cryptos.clone() {
-
             html! {
             <div class=classes!("container")>
-                <CryptoGeneral name="Bitcoin" image="btc.svg" price=cryptos.bitcoin/>
-                <CryptoGeneral name="Ethereum" image="eth.svg" price=cryptos.ethereum/>
-                <CryptoGeneral name="Chain Link" image="link.svg" price=cryptos.chain_link/>
-                <CryptoGeneral name="Litecoin" image="ltc.svg" price=cryptos.litecoin/>
-                <CryptoGeneral name="Bitcoin Cash" image="bch.svg" price=cryptos.bitcoin_cash/>
+                <CryptoGeneral name="Bitcoin" image="btc.svg" price=cryptos.bitcoin id="bitcoin"/>
+                <CryptoGeneral name="Ethereum" image="eth.svg" price=cryptos.ethereum id="ethereum"/>
+                <CryptoGeneral name="Chain Link" image="link.svg" price=cryptos.chain_link id ="chainlink"/>
+                <CryptoGeneral name="Litecoin" image="ltc.svg" price=cryptos.litecoin id = "litecoin"/>
+                <CryptoGeneral name="Bitcoin Cash" image="bch.svg" price=cryptos.bitcoin_cash id ="bitcoin-cash"/>
+                <CryptoGeneral name="Unit Protocol Duck" image="duck.png" price=cryptos.unit_protocol_duck id="unit-protocol-duck"/>
             </div>
             }
         } else {
