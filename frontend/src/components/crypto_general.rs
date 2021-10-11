@@ -60,7 +60,7 @@ impl CryptoGeneral {
             };
 
             let price_diff = current_price - history_price;
-            let price_change = (price_diff / history_price) * 100.0;
+            let price_change = (price_diff / current_price) * 100.0;
             (
                 self.format_price(price_diff, 6),
                 format!("({:.2}%)", price_change),
@@ -98,7 +98,7 @@ impl Component for CryptoGeneral {
 
         // against BTC/ETH
         let formatted_price_btc = self.format_price(properties.price.btc, 6);
-        let formatted_change_btc = format!(" ({:.2}%) ", properties.price.eth_24h_change);
+        let formatted_change_btc = format!(" ({:.2}%) ", properties.price.btc_24h_change);
         let formatted_price_eth = self.format_price(properties.price.eth, 6);
         let formatted_change_eth = format!(" ({:.2}%) ", properties.price.eth_24h_change);
 
