@@ -1,6 +1,8 @@
 #[macro_use]
 extern crate serde;
 
+use std::time::Duration;
+
 use wasm_bindgen::prelude::wasm_bindgen;
 use yew::{
     classes,
@@ -8,7 +10,8 @@ use yew::{
     html,
     services::{
         fetch::{FetchTask, Request, Response},
-        ConsoleService, FetchService,
+        timeout::TimeoutTask,
+        ConsoleService, FetchService, TimeoutService,
     },
     App, Component, ComponentLink, Html, ShouldRender,
 };
@@ -23,6 +26,7 @@ struct CryptoAnalyticsApp {
     link: ComponentLink<Self>,
     cryptos: Option<Cryptos>,
     fetch_task: Option<FetchTask>,
+    refresh_task: Option<TimeoutTask>,
 }
 
 impl Component for CryptoAnalyticsApp {
@@ -30,10 +34,12 @@ impl Component for CryptoAnalyticsApp {
     type Properties = ();
     fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
         link.send_message(Msg::MakeReq);
+
         Self {
             link,
             cryptos: None,
             fetch_task: None,
+            refresh_task: None,
         }
     }
 
@@ -62,6 +68,12 @@ impl Component for CryptoAnalyticsApp {
                 // set task to avoid out of scope
                 let task = FetchService::fetch(req, cb).expect("can create task");
                 self.fetch_task = Some(task);
+
+                // set recurring calls
+                self.refresh_task = Some(TimeoutService::spawn(
+                    Duration::from_secs(300),
+                    self.link.callback(|_| Msg::MakeReq),
+                ));
             }
             Msg::Resp(resp) => {
                 if let Ok(data) = resp {
