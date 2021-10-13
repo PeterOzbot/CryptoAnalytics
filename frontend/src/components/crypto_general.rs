@@ -6,15 +6,14 @@ use yew::services::{ConsoleService, FetchService};
 use yew::Properties;
 use yew::{classes, html, Component, ComponentLink, Html, ShouldRender};
 
+use crate::models::crypto::Crypto;
 use crate::models::history_price::{self};
 use crate::models::price;
 
 #[derive(Properties, Clone, PartialEq)]
 pub struct CryptoGeneralProperties {
     pub price: price::Price,
-    pub id: String,
-    pub name: String,
-    pub image: String,
+    pub definition: Crypto,
 }
 
 pub struct CryptoGeneral {
@@ -70,7 +69,7 @@ impl CryptoGeneral {
             (
                 String::from("loading..."),
                 String::from(""),
-                String::from("black"),
+                String::from(""),
             )
         }
     }
@@ -117,20 +116,22 @@ impl Component for CryptoGeneral {
         // construct HTML
         html! {
             <div class="crypto-general-container">
-                <div class="current_price align_center">
-                    <img src={properties.image} class="image"/>
-                    <span class=classes!(price_change_direction.clone(), "price")>{formatted_price}</span>
-                    <span class=classes!(price_change_direction.clone(), "change")>{formatted_change}</span>
-                </div>
+                <div class="crypto-general-container-inner">
+                    <div class="current_price align_center">
+                        <img src={properties.definition.icon} class="image"/>
+                        <span class=classes!(price_change_direction.clone(), "price")>{formatted_price}</span>
+                        <span class=classes!(price_change_direction.clone(), "change")>{formatted_change}</span>
+                    </div>
 
-                <div class="against_btc align_center">
-                    <span class=classes!("against_other")>{"BTC: "}{formatted_price_btc}{formatted_change_btc}</span>
-                    <span class=classes!(formatted_history_change_direction_btc, "against_other")>{" m: "}{formatted_history_diff_btc}{formatted_history_change_btc}</span>
-                </div>
+                    <div class="against_btc align_center">
+                        <span class=classes!("against_other")>{"BTC: "}{formatted_price_btc}{formatted_change_btc}</span>
+                        <span class=classes!(formatted_history_change_direction_btc, "against_other")>{" m: "}{formatted_history_diff_btc}{formatted_history_change_btc}</span>
+                    </div>
 
-                <div class="against_eth align_center">
-                    <span class=classes!("against_other")>{"ETH: "}{formatted_price_eth}{formatted_change_eth}</span>
-                    <span class=classes!(formatted_history_change_direction_eth, "against_other")>{" m: "}{formatted_history_diff_eth}{formatted_history_change_eth}</span>
+                    <div class="against_eth align_center">
+                        <span class=classes!("against_other")>{"ETH: "}{formatted_price_eth}{formatted_change_eth}</span>
+                        <span class=classes!(formatted_history_change_direction_eth, "against_other")>{" m: "}{formatted_history_diff_eth}{formatted_history_change_eth}</span>
+                    </div>
                 </div>
             </div>
         }
@@ -142,7 +143,7 @@ impl Component for CryptoGeneral {
                 self.history_price = None;
 
                 // url for request
-                let url_request = format!("https://api.coingecko.com/api/v3/coins/{:}/history?date={:}&localization=false",self.properties.id,self.history_price_date() );
+                let url_request = format!("https://api.coingecko.com/api/v3/coins/{:}/history?date={:}&localization=false",self.properties.definition.id,self.history_price_date() );
                 ConsoleService::info(&format!("Loading history price data: {:?}", url_request));
 
                 // create request

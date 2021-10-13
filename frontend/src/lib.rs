@@ -1,8 +1,9 @@
 #[macro_use]
 extern crate serde;
 
-use std::time::Duration;
+use std::{time::Duration, vec};
 
+use serde_json::{from_value, Value};
 use wasm_bindgen::prelude::wasm_bindgen;
 use yew::{
     classes,
@@ -17,16 +18,20 @@ use yew::{
 };
 
 use components::crypto_general::CryptoGeneral;
-use models::price::*;
+use models::{
+    crypto::{Crypto, CryptoData},
+    price::*,
+};
 
 mod components;
 mod models;
 
 struct CryptoAnalyticsApp {
     link: ComponentLink<Self>,
-    cryptos: Option<Cryptos>,
+    cryptos: Option<Vec<CryptoData>>,
     fetch_task: Option<FetchTask>,
     refresh_task: Option<TimeoutTask>,
+    crypto_definitions: Vec<Crypto>,
 }
 
 impl Component for CryptoAnalyticsApp {
@@ -40,6 +45,36 @@ impl Component for CryptoAnalyticsApp {
             cryptos: None,
             fetch_task: None,
             refresh_task: None,
+            crypto_definitions: vec![
+                Crypto {
+                    id: "bitcoin",
+                    icon: "btc.svg",
+                },
+                Crypto {
+                    id: "ethereum",
+                    icon: "eth.svg",
+                },
+                Crypto {
+                    id: "chainlink",
+                    icon: "link.svg",
+                },
+                Crypto {
+                    id: "litecoin",
+                    icon: "ltc.svg",
+                },
+                Crypto {
+                    id: "bitcoin-cash",
+                    icon: "bch.svg",
+                },
+                Crypto {
+                    id: "unit-protocol-duck",
+                    icon: "duck.png",
+                },
+                Crypto {
+                    id: "blockstack",
+                    icon: "stx.svg",
+                },
+            ],
         }
     }
 
@@ -48,8 +83,14 @@ impl Component for CryptoAnalyticsApp {
             Msg::MakeReq => {
                 self.cryptos = None;
 
+                // get ids
+                let mut ids: String = String::from("");
+                for def in &self.crypto_definitions {
+                    ids = ids + "," + def.id;
+                }
+
                 // url for request
-                let url_request = "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,litecoin,ethereum,bitcoin-cash,chainlink,unit-protocol-duck&vs_currencies=EUR,BTC,ETH&include_24hr_change=true";
+                let url_request = format!("https://api.coingecko.com/api/v3/simple/price?ids={:}&vs_currencies=EUR,BTC,ETH&include_24hr_change=true", ids);
                 ConsoleService::info(&format!("Loading data: {:?}", url_request));
 
                 // create request
@@ -58,12 +99,12 @@ impl Component for CryptoAnalyticsApp {
                     .expect("Loading data failed");
 
                 // callback to handle messaging
-                let cb = self.link.callback(
-                    |response: Response<Json<Result<Cryptos, anyhow::Error>>>| {
-                        let Json(data) = response.into_body();
-                        Msg::Resp(data)
-                    },
-                );
+                let cb =
+                    self.link
+                        .callback(|response: Response<Json<Result<Value, anyhow::Error>>>| {
+                            let Json(data) = response.into_body();
+                            Msg::Resp(data)
+                        });
 
                 // set task to avoid out of scope
                 let task = FetchService::fetch(req, cb).expect("can create task");
@@ -75,12 +116,31 @@ impl Component for CryptoAnalyticsApp {
                     self.link.callback(|_| Msg::MakeReq),
                 ));
             }
-            Msg::Resp(resp) => {
-                if let Ok(data) = resp {
-                    self.cryptos = Some(data);
+            Msg::Resp(resp) => match resp {
+                Ok(data) => {
+                    let mut cryptos = Vec::new();
+
+                    for def in &self.crypto_definitions {
+                        match from_value::<Price>(data[def.id].clone()) {
+                            Ok(price) => {
+                                cryptos.push(CryptoData {
+                                    definition: def.clone(),
+                                    price: price,
+                                });
+                            }
+                            Err(error) => {
+                                ConsoleService::info(&format!("Parsing price error: {:}", error));
+                            }
+                        }
+                    }
+
+                    self.cryptos = Some(cryptos);
                     ConsoleService::info(&format!("Cryptos: {:?}", self.cryptos));
                 }
-            }
+                Err(error) => {
+                    ConsoleService::info(&format!("Message response error: {:}", error));
+                }
+            },
         }
         true
     }
@@ -90,19 +150,19 @@ impl Component for CryptoAnalyticsApp {
     }
 
     fn view(&self) -> Html {
-        if let Some(cryptos) = self.cryptos.clone() {
+        if let Some(cryptos) = &self.cryptos {
+            let crypto_html: Vec<Html> = cryptos
+                .iter()
+                .map(|crypto_data| {
+                    html! {
+                       <CryptoGeneral price=crypto_data.price.clone() definition=crypto_data.definition.clone()/>
+                    }
+                })
+                .collect();
+
             html! {
             <div class=classes!("container")>
-                <div>
-                    <CryptoGeneral name="Bitcoin" image="btc.svg" price=cryptos.bitcoin id="bitcoin"/>
-                    <CryptoGeneral name="Ethereum" image="eth.svg" price=cryptos.ethereum id="ethereum"/>
-                    <CryptoGeneral name="Chain Link" image="link.svg" price=cryptos.chain_link id ="chainlink"/>
-                </div>
-                <div>
-                    <CryptoGeneral name="Litecoin" image="ltc.svg" price=cryptos.litecoin id = "litecoin"/>
-                    <CryptoGeneral name="Bitcoin Cash" image="bch.svg" price=cryptos.bitcoin_cash id ="bitcoin-cash"/>
-                    <CryptoGeneral name="Unit Protocol Duck" image="duck.png" price=cryptos.unit_protocol_duck id="unit-protocol-duck"/>
-                </div>
+                {crypto_html}
             </div>
             }
         } else {

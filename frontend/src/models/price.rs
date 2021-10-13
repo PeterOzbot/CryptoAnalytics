@@ -1,15 +1,4 @@
-#[derive(Deserialize, Clone, PartialEq, Debug)]
-pub struct Cryptos {
-    pub bitcoin: Price,
-    pub ethereum: Price,
-    pub litecoin: Price,
-    #[serde(rename(deserialize = "bitcoin-cash"))]
-    pub bitcoin_cash: Price,
-    #[serde(rename(deserialize = "chainlink"))]
-    pub chain_link: Price,
-    #[serde(rename(deserialize = "unit-protocol-duck"))]
-    pub unit_protocol_duck:Price,
-}
+use serde_json::Value;
 
 #[derive(Deserialize, Clone, PartialEq, Debug)]
 pub struct Price {
@@ -23,5 +12,5 @@ pub struct Price {
 
 pub enum Msg {
     MakeReq,
-    Resp(Result<Cryptos, anyhow::Error>),
+    Resp(Result<Value, anyhow::Error>),
 }
