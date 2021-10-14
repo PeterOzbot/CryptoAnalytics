@@ -61,7 +61,7 @@ impl CryptoGeneral {
             let price_diff = current_price - history_price;
             let price_change = (price_diff / current_price) * 100.0;
             (
-                self.format_price(price_diff, 6),
+                self.format_price(history_price, 6),
                 format!("({:.2}%)", price_change),
                 self.handle_price_change(price_diff),
             )
@@ -97,18 +97,20 @@ impl Component for CryptoGeneral {
 
         // against BTC/ETH
         let formatted_price_btc = self.format_price(properties.price.btc, 6);
-        let formatted_change_btc = format!(" ({:.2}%) ", properties.price.btc_24h_change);
+        let formatted_change_btc = format!("({:.2}%) ", properties.price.btc_24h_change);
+        let formatted_change_direction_btc= self.handle_price_change( properties.price.btc_24h_change);
         let formatted_price_eth = self.format_price(properties.price.eth, 6);
-        let formatted_change_eth = format!(" ({:.2}%) ", properties.price.eth_24h_change);
+        let formatted_change_eth = format!("({:.2}%) ", properties.price.eth_24h_change);
+        let formatted_change_direction_eth= self.handle_price_change( properties.price.eth_24h_change);
 
         // against BTC/ETH historical
         let (
-            formatted_history_diff_btc,
+            formatted_history_price_btc,
             formatted_history_change_btc,
             formatted_history_change_direction_btc,
         ) = self.handle_history_price(self.properties.price.btc, "btc");
         let (
-            formatted_history_diff_eth,
+            formatted_history_price_eth,
             formatted_history_change_eth,
             formatted_history_change_direction_eth,
         ) = self.handle_history_price(self.properties.price.eth, "eth");
@@ -117,21 +119,50 @@ impl Component for CryptoGeneral {
         html! {
             <div class="crypto-general-container">
                 <div class="crypto-general-container-inner">
-                    <div class="current_price align_center">
+                    <div class="align_center crypto-general-main-price">
                         <img src={properties.definition.icon} class="image"/>
                         <span class=classes!(price_change_direction.clone(), "price")>{formatted_price}</span>
                         <span class=classes!(price_change_direction.clone(), "change")>{formatted_change}</span>
                     </div>
 
-                    <div class="against_btc align_center">
-                        <span class=classes!("against_other")>{"BTC: "}{formatted_price_btc}{formatted_change_btc}</span>
-                        <span class=classes!(formatted_history_change_direction_btc, "against_other")>{" m: "}{formatted_history_diff_btc}{formatted_history_change_btc}</span>
+                    <div class="against-other-container align_center">
+                        <div class="against-other">
+                            <div class="against-other-title align_center">{"BTC"}</div>
+                            <div class="against-other-data">
+                                <div class="against-other-value">{"d:"}</div>
+                                <div class=classes!(&formatted_change_direction_btc, "against-other-value")>{formatted_price_btc}</div>
+                                <div class=classes!(&formatted_change_direction_btc, "against-other-change")>{formatted_change_btc}</div>
+                            </div>
+                            <div class="against-other-data">
+                                <div class="against-other-value">{"m:"}</div>
+                                <div class=classes!(&formatted_history_change_direction_btc, "against-other-value")>{formatted_history_price_btc}</div>
+                                <div class=classes!(&formatted_history_change_direction_btc, "against-other-change")>{formatted_history_change_btc}</div>
+                            </div>
+                        </div>
+                        <div class="against-other">
+                            <div class="against-other-title align_center">{"ETH"}</div>
+                            <div class="against-other-data">
+                                <div class="against-other-value"></div>
+                                <div class=classes!(&formatted_change_direction_eth, "against-other-value")>{formatted_price_eth}</div>
+                                <div class=classes!(&formatted_change_direction_eth, "against-other-change")>{formatted_change_eth}</div>
+                            </div>
+                            <div class="against-other-data">
+                                <div class="against-other-value"></div>
+                                <div class=classes!(&formatted_history_change_direction_eth, "against-other-value")>{formatted_history_price_eth}</div>
+                                <div class=classes!(&formatted_history_change_direction_eth, "against-other-change")>{formatted_history_change_eth}</div>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="against_eth align_center">
-                        <span class=classes!("against_other")>{"ETH: "}{formatted_price_eth}{formatted_change_eth}</span>
-                        <span class=classes!(formatted_history_change_direction_eth, "against_other")>{" m: "}{formatted_history_diff_eth}{formatted_history_change_eth}</span>
-                    </div>
+                    // <div class="align_center">
+                    //     <span class=classes!("against_other")>{"BTC  d:"}{formatted_price_btc}{formatted_change_btc}</span>
+                    //     <span class=classes!(formatted_history_change_direction_btc, "against_other")>{" m: "}{formatted_history_diff_btc}{formatted_history_change_btc}</span>
+                    // </div>
+
+                    // <div class="align_center">
+                    //     <span class=classes!("against_other")>{"ETH  d:"}{formatted_price_eth}{formatted_change_eth}</span>
+                    //     <span class=classes!(formatted_history_change_direction_eth, "against_other")>{" m: "}{formatted_history_diff_eth}{formatted_history_change_eth}</span>
+                    // </div>
                 </div>
             </div>
         }
