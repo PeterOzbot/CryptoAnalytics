@@ -14,7 +14,7 @@ pub struct CryptoGeneralProperties {
 }
 
 pub struct CryptoGeneral {
-    properties: CryptoGeneralProperties
+    properties: CryptoGeneralProperties,
 }
 
 impl Component for CryptoGeneral {
@@ -23,9 +23,7 @@ impl Component for CryptoGeneral {
 
     fn create(properties: Self::Properties, link: ComponentLink<Self>) -> Self {
         link.send_message(history_price::Msg::MakeReq);
-        Self {
-            properties,
-        }
+        Self { properties }
     }
 
     fn view(&self) -> Html {
@@ -73,7 +71,7 @@ impl Component for CryptoGeneral {
                         </div>
 
                      <CryptoHistory definition=self.properties.definition.clone() price=self.properties.price.clone() duration=HistoryDuration::Month/>
-                     
+
                      <CryptoHistory definition=self.properties.definition.clone() price=self.properties.price.clone() duration=HistoryDuration::Year/>
                     </div>
                 </div>

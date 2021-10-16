@@ -60,7 +60,7 @@ impl CryptoHistory {
                 };
 
                 let price_diff = current_price - history_price;
-                let price_change = (price_diff / current_price) * 100.0;
+                let price_change = (price_diff / history_price) * 100.0;
                 (
                     PriceFormatting::format_price(history_price, 6),
                     format!("({:.2}%)", price_change),
