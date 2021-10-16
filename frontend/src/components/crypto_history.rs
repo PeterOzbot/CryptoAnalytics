@@ -1,5 +1,3 @@
-use std::iter::from_fn;
-
 use chrono::{self, Duration};
 use yew::format::{Json, Nothing};
 use yew::services::fetch::{FetchTask, Request, Response};
@@ -75,7 +73,7 @@ impl CryptoHistory {
                 String::from(""),
             ),
             HistoryPriceOption::Error => {
-                (String::from("/"), String::from(""), String::from(""))
+                (String::from("--------"), String::from("(-- %)"), String::from(""))
             }
         }
     }
