@@ -25,6 +25,7 @@ use models::{
 
 mod components;
 mod models;
+mod common;
 
 struct CryptoAnalyticsApp {
     link: ComponentLink<Self>,
