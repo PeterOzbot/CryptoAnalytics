@@ -17,6 +17,7 @@ pub enum HistoryDuration {
 }
 
 pub enum HistoryPriceMode {
+    Eur,
     Btc,
     Eth,
 }
@@ -54,15 +55,16 @@ impl CryptoHistory {
     ) -> (String, String, String) {
         match &self.history_price {
             HistoryPriceOption::Some(history) => {
-                let history_price = match mode {
-                    HistoryPriceMode::Btc => history.market_data.current_price.btc,
-                    HistoryPriceMode::Eth => history.market_data.current_price.eth,
+                let (history_price, format_precision) = match mode {
+                    HistoryPriceMode::Eur => (history.market_data.current_price.eur, 2),
+                    HistoryPriceMode::Btc => (history.market_data.current_price.btc, 6),
+                    HistoryPriceMode::Eth => (history.market_data.current_price.eth, 6),
                 };
 
                 let price_diff = current_price - history_price;
                 let price_change = (price_diff / history_price) * 100.0;
                 (
-                    PriceFormatting::format_price(history_price, 6),
+                    PriceFormatting::format_price(history_price, format_precision),
                     format!("({:.2}%)", price_change),
                     PriceFormatting::handle_price_change(price_diff),
                 )
@@ -72,9 +74,11 @@ impl CryptoHistory {
                 String::from(""),
                 String::from(""),
             ),
-            HistoryPriceOption::Error => {
-                (String::from("--------"), String::from("(-- %)"), String::from(""))
-            }
+            HistoryPriceOption::Error => (
+                String::from("--------"),
+                String::from("(-- %)"),
+                String::from(""),
+            ),
         }
     }
 }
@@ -107,12 +111,19 @@ impl Component for CryptoHistory {
             HistoryDuration::Year => String::from("year:"),
         };
 
-        // against BTC/ETH historical
+        // against EUR historical
+        let (
+            formatted_history_price_eur,
+            formatted_history_change_eur,
+            formatted_history_change_direction_eur,
+        ) = self.handle_history_price(self.properties.price.eur, HistoryPriceMode::Eur);
+        // against BTC historical
         let (
             formatted_history_price_btc,
             formatted_history_change_btc,
             formatted_history_change_direction_btc,
         ) = self.handle_history_price(self.properties.price.btc, HistoryPriceMode::Btc);
+        // against ETH historical
         let (
             formatted_history_price_eth,
             formatted_history_change_eth,
@@ -122,6 +133,10 @@ impl Component for CryptoHistory {
         html! {
             <div class="against-other">
                 <div class="against-other-title align_center">{title}</div>
+                <div class="against-other-data">
+                    <div class=classes!(&formatted_history_change_direction_eur, "against-other-value")>{&formatted_history_price_eur}</div>
+                    <div class=classes!(&formatted_history_change_direction_eur, "against-other-change")>{&formatted_history_change_eur}</div>
+                </div>
                 <div class="against-other-data">
                     <div class=classes!(&formatted_history_change_direction_btc, "against-other-value")>{&formatted_history_price_btc}</div>
                     <div class=classes!(&formatted_history_change_direction_btc, "against-other-change")>{&formatted_history_change_btc}</div>

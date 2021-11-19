@@ -50,14 +50,19 @@ impl Component for CryptoGeneral {
                 <div class="crypto-general-container-inner">
                     <div class="align_center crypto-general-main-price">
                         <img src={properties.definition.icon} class="image"/>
-                        <span class=classes!(price_change_direction.clone(), "price")>{formatted_price}</span>
-                        <span class=classes!(price_change_direction.clone(), "change")>{formatted_change}</span>
+                        <span class=classes!(&price_change_direction, "price")>{&formatted_price}</span>
+                        <span class=classes!(&price_change_direction, "change")>{&formatted_change}</span>
                     </div>
 
                     <div class="against-other-container align_center">
                         <div class="against-other">
 
                             <div class="against-other-title align_center">{"day:"}</div>
+                            <div class="against-other-data">
+                                <div class="against-other-value">{"EUR:"}</div>
+                                <div class=classes!(&price_change_direction, "against-other-value")>{&formatted_price}</div>
+                                <div class=classes!(&price_change_direction, "against-other-change")>{&formatted_change}</div>
+                            </div>
                             <div class="against-other-data">
                                 <div class="against-other-value">{"BTC:"}</div>
                                 <div class=classes!(&formatted_change_direction_btc, "against-other-value")>{&formatted_price_btc}</div>
