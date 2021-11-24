@@ -77,6 +77,10 @@ impl Component for CryptoAnalyticsApp {
                     id: "blockstack",
                     icon: "stx.svg",
                 },
+                Crypto {
+                    id: "defichain",
+                    icon: "defichain.png",
+                },
             ],
         }
     }
