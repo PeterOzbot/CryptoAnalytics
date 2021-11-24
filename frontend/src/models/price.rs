@@ -11,6 +11,5 @@ pub struct Price {
 }
 
 pub enum Msg {
-    MakeReq,
-    Resp(Result<Value, anyhow::Error>),
+    Refresh
 }

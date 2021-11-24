@@ -75,9 +75,9 @@ impl Component for CryptoGeneral {
                             </div>
                         </div>
 
-                     <CryptoHistory definition=self.properties.definition.clone() price=self.properties.price.clone() duration=HistoryDuration::Month/>
+                    //  <CryptoHistory definition=self.properties.definition.clone() price=self.properties.price.clone() duration=HistoryDuration::Month/>
 
-                     <CryptoHistory definition=self.properties.definition.clone() price=self.properties.price.clone() duration=HistoryDuration::Year/>
+                    //  <CryptoHistory definition=self.properties.definition.clone() price=self.properties.price.clone() duration=HistoryDuration::Year/>
                     </div>
                 </div>
             </div>
