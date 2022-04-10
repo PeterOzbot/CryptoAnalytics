@@ -1,4 +1,5 @@
 use yew::{
+    classes,
     format::{Json, Nothing},
     services::{
         fetch::{FetchTask, Request, Response},
@@ -6,9 +7,12 @@ use yew::{
     },
 };
 
-use crate::models::crypto::Crypto;
+use crate::{
+    common::{data::Data, formatted_data::FormattedData},
+    models::crypto::Crypto,
+};
 
-use super::{data::Data, message::Message};
+use super::message::Message;
 
 #[derive(yew::Properties, Clone, PartialEq)]
 pub struct Properties {
@@ -38,12 +42,26 @@ impl yew::Component for Component {
 
     fn view(&self) -> yew::Html {
         if let Some(data) = &self.data {
+            let formatted_data = FormattedData::format(data);
 
             // construct HTML
             yew::html! {
                 <div class="general-row">
-                    <img src=data.image.thumb.clone()/>
-                    <div>{data.market_data.current_price.eur}</div>
+                    <div class="general-price">
+                        <img src=data.image.thumb.clone()/>
+                        <div class=classes!(&formatted_data.current.change_direction, "price")>{formatted_data.current.value}</div>
+                        <div class=classes!(&formatted_data.current.change_direction, "change")>{formatted_data.current.change}</div>
+                    </div>
+
+                    <crate::history::Component label="24h" price_change=data.market_data.price_change_24h_in_currency.clone() current_price=data.market_data.current_price.clone() />
+
+                    <crate::history::Component label="7d" price_change=data.market_data.price_change_percentage_7d_in_currency.clone() current_price=data.market_data.current_price.clone() />
+
+                    <crate::history::Component label="30d" price_change=data.market_data.price_change_percentage_30d_in_currency.clone() current_price=data.market_data.current_price.clone() />
+
+                    <crate::history::Component label="200d" price_change=data.market_data.price_change_percentage_200d_in_currency.clone() current_price=data.market_data.current_price.clone() />
+
+                    <crate::history::Component label="1y" price_change=data.market_data.price_change_percentage_1y_in_currency.clone() current_price=data.market_data.current_price.clone() />
                 </div>
             }
         } else {

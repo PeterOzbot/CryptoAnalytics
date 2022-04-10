@@ -1,0 +1,39 @@
+.general-container {
+    display: flex;
+    display: flex;
+    flex-direction: column;
+}
+
+.general-row {
+    margin: 5px;
+    padding: 10px;
+
+    background-color: #F2F3F4;
+    border-radius: 10px;
+    border-style: solid;
+    border-width: 1px;
+    border-color: #CDD0CB;
+
+    display: flex;
+}
+
+.general-row .general-price {
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    width: 250px;
+    min-width: 250px;
+}
+
+.general-row .general-price img {
+    margin-right: 10px;
+}
+
+.general-row .general-price .price {
+    margin-right: 10px;
+}
+
+.general-row .general-price .change {
+    font-size: 13px;
+}

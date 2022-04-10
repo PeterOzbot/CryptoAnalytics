@@ -2,30 +2,19 @@
 extern crate serde;
 
 use chrono::Local;
-use serde_json::{from_value, Value};
 use std::{time::Duration, vec};
 use wasm_bindgen::prelude::wasm_bindgen;
 use yew::{
-    classes,
-    format::{Json, Nothing},
-    html,
-    services::{
-        fetch::{FetchTask, Request, Response},
-        timeout::TimeoutTask,
-        ConsoleService, FetchService, TimeoutService,
-    },
+    classes, html,
+    services::{timeout::TimeoutTask, TimeoutService},
     App, Component, ComponentLink, Html, ShouldRender,
 };
 
-use components::crypto_general::CryptoGeneral;
-use models::{
-    crypto::{Crypto, CryptoData},
-    price::*,
-};
+use models::{crypto::Crypto, price::*};
 
 mod common;
-mod components;
 mod general;
+mod history;
 mod models;
 
 struct CryptoAnalyticsApp {
@@ -47,33 +36,33 @@ impl Component for CryptoAnalyticsApp {
             last_updated: None,
             crypto_definitions: vec![
                 Crypto {
-                    id: "bitcoin",
-                    icon: "btc.svg",
+                    id: String::from("bitcoin"),
+                    precision: 2,
                 },
                 Crypto {
-                    id: "ethereum",
-                    icon: "eth.svg",
+                    id: String::from("ethereum"),
+                    precision: 2,
                 },
-                // Crypto {
-                //     id: "chainlink",
-                //     icon: "link.svg",
-                // },
-                // Crypto {
-                //     id: "litecoin",
-                //     icon: "ltc.svg",
-                // },
-                // Crypto {
-                //     id: "bitcoin-cash",
-                //     icon: "bch.svg",
-                // },
-                // Crypto {
-                //     id: "unit-protocol-duck",
-                //     icon: "duck.png",
-                // },
-                // Crypto {
-                //     id: "blockstack",
-                //     icon: "stx.svg",
-                // },
+                Crypto {
+                    id: String::from("chainlink"),
+                    precision: 2,
+                },
+                Crypto {
+                    id: String::from("litecoin"),
+                    precision: 2,
+                },
+                Crypto {
+                    id: String::from("bitcoin-cash"),
+                    precision: 2,
+                },
+                Crypto {
+                    id: String::from("unit-protocol-duck"),
+                    precision: 4,
+                },
+                Crypto {
+                    id: String::from("blockstack"),
+                    precision: 2,
+                },
             ],
         }
     }

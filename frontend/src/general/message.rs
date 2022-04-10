@@ -1,4 +1,4 @@
-use super::data::Data;
+use crate::common::data::Data;
 
 pub enum Message {
     MakeReq,

@@ -1,0 +1,18 @@
+.history-column {
+    margin-left: 20px;
+
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.history-column .label {
+    text-align: center;
+    font-size: 17px;
+    margin-bottom: 5px;
+}
+
+.history-column .price {
+    text-align: center;
+    font-size: 14px;
+}

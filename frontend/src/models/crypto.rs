@@ -10,13 +10,13 @@ pub struct CryptoData {
 
 #[derive(Clone, PartialEq, Debug)]
 pub struct Crypto {
-    pub id: &'static str,
-    pub icon: &'static str,
+    pub id: String,
+    pub precision: i8,
 }
 
 impl Display for Crypto {
     fn fmt(&self, fmt: &mut Formatter) -> Result {
-        fmt.write_str(self.id)?;
+        fmt.write_str(self.id.as_str())?;
         Ok(())
     }
 }

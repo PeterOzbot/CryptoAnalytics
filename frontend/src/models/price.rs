@@ -1,5 +1,3 @@
-use serde_json::Value;
-
 #[derive(Deserialize, Clone, PartialEq, Debug)]
 pub struct Price {
     pub eur: f64,
@@ -11,5 +9,5 @@ pub struct Price {
 }
 
 pub enum Msg {
-    Refresh
+    Refresh,
 }
