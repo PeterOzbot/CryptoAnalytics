@@ -11,7 +11,7 @@ pub struct CryptoData {
 #[derive(Clone, PartialEq, Debug)]
 pub struct Crypto {
     pub id: String,
-    pub precision: i8,
+    pub precision: usize,
 }
 
 impl Display for Crypto {

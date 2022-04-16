@@ -56,12 +56,16 @@ impl Component for CryptoAnalyticsApp {
                     precision: 2,
                 },
                 Crypto {
-                    id: String::from("unit-protocol-duck"),
-                    precision: 4,
-                },
-                Crypto {
                     id: String::from("blockstack"),
                     precision: 2,
+                },
+                Crypto {
+                    id: String::from("defichain"),
+                    precision: 2,
+                },
+                Crypto {
+                    id: String::from("unit-protocol-duck"),
+                    precision: 4,
                 },
             ],
         }

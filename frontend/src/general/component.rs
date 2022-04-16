@@ -8,7 +8,7 @@ use yew::{
 };
 
 use crate::{
-    common::{data::Data, formatted_data::FormattedData},
+    common::{Data, FormattedPrice},
     models::crypto::Crypto,
 };
 
@@ -42,26 +42,35 @@ impl yew::Component for Component {
 
     fn view(&self) -> yew::Html {
         if let Some(data) = &self.data {
-            let formatted_data = FormattedData::format(data);
+            let formatted_price =
+                FormattedPrice::format_data(data, self.properties.definition.precision);
 
             // construct HTML
             yew::html! {
                 <div class="general-row">
-                    <div class="general-price">
+                    <div class="general-info">
                         <img src=data.image.thumb.clone()/>
-                        <div class=classes!(&formatted_data.current.change_direction, "price")>{formatted_data.current.value}</div>
-                        <div class=classes!(&formatted_data.current.change_direction, "change")>{formatted_data.current.change}</div>
+                        <div class="general-price">
+                            <div class=classes!(&formatted_price.change_direction, "price")>{formatted_price.value}</div>
+                            <div class=classes!(&formatted_price.change_direction, "change")>{formatted_price.change}</div>
+                        </div>
                     </div>
 
-                    <crate::history::Component label="24h" price_change=data.market_data.price_change_24h_in_currency.clone() current_price=data.market_data.current_price.clone() />
+                    <crate::history::Component label="24h" price_change=data.market_data.price_change_percentage_24h_in_currency.clone() current_price=data.market_data.current_price.clone() definition= self.properties.definition.clone() use_absolute=true />
 
-                    <crate::history::Component label="7d" price_change=data.market_data.price_change_percentage_7d_in_currency.clone() current_price=data.market_data.current_price.clone() />
+                    <crate::history::Component label="7d" price_change=data.market_data.price_change_percentage_7d_in_currency.clone() current_price=data.market_data.current_price.clone() definition= self.properties.definition.clone() use_absolute=false/>
 
-                    <crate::history::Component label="30d" price_change=data.market_data.price_change_percentage_30d_in_currency.clone() current_price=data.market_data.current_price.clone() />
+                    <crate::history::Component label="30d" price_change=data.market_data.price_change_percentage_30d_in_currency.clone() current_price=data.market_data.current_price.clone() definition= self.properties.definition.clone() use_absolute=false/>
 
-                    <crate::history::Component label="200d" price_change=data.market_data.price_change_percentage_200d_in_currency.clone() current_price=data.market_data.current_price.clone() />
+                    <crate::history::Component label="200d" price_change=data.market_data.price_change_percentage_200d_in_currency.clone() current_price=data.market_data.current_price.clone() definition= self.properties.definition.clone() use_absolute=false/>
 
-                    <crate::history::Component label="1y" price_change=data.market_data.price_change_percentage_1y_in_currency.clone() current_price=data.market_data.current_price.clone() />
+                    <crate::history::Component label="1y" price_change=data.market_data.price_change_percentage_1y_in_currency.clone() current_price=data.market_data.current_price.clone() definition= self.properties.definition.clone() use_absolute=false/>
+
+                    <div class="legend">
+                        <div>{"EUR"}</div>
+                        <div>{"BTC"}</div>
+                        <div>{"ETH"}</div>
+                    </div>
                 </div>
             }
         } else {

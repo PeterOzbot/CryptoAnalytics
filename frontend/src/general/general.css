@@ -6,6 +6,8 @@
 
 .general-row {
     margin: 5px;
+    margin-left: 50px;
+    margin-right: 50px;
     padding: 10px;
 
     background-color: #F2F3F4;
@@ -15,25 +17,46 @@
     border-color: #CDD0CB;
 
     display: flex;
+    align-items: center;
+}
+
+.general-row .general-info {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-grow: 1;
+    flex-basis: 0;
+    min-width: 210px;
 }
 
 .general-row .general-price {
-    font-size: 20px;
     display: flex;
-    align-items: center;
-    flex-direction: row;
-    width: 250px;
-    min-width: 250px;
+    flex-direction: column;
 }
 
-.general-row .general-price img {
+.general-row img {
+    margin-right: 20px;
+    width: 35px;
+    height: 35px;
+}
+
+.general-row .price {
+    font-size: 28px;
     margin-right: 10px;
 }
 
-.general-row .general-price .price {
-    margin-right: 10px;
-}
-
-.general-row .general-price .change {
+.general-row .change {
+    margin-top: 10px;
     font-size: 13px;
+    margin-left: 5px;
+}
+
+.general-row .legend {
+    display: flex;
+    flex-direction: column;
+    font-size: 14px;
+}
+
+.general-row .legend div:first-child {
+    margin-top: 20px;
 }
