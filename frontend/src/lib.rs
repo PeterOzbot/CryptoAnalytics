@@ -2,36 +2,24 @@
 extern crate serde;
 
 use chrono::Local;
-use serde_json::{from_value, Value};
 use std::{time::Duration, vec};
 use wasm_bindgen::prelude::wasm_bindgen;
 use yew::{
-    classes,
-    format::{Json, Nothing},
-    html,
-    services::{
-        fetch::{FetchTask, Request, Response},
-        timeout::TimeoutTask,
-        ConsoleService, FetchService, TimeoutService,
-    },
+    classes, html,
+    services::{timeout::TimeoutTask, TimeoutService},
     App, Component, ComponentLink, Html, ShouldRender,
 };
 
-use components::crypto_general::CryptoGeneral;
-use models::{
-    crypto::{Crypto, CryptoData},
-    price::*,
-};
+use models::{crypto::Crypto, price::*};
 
 mod common;
-mod components;
+mod general;
+mod history;
 mod models;
 
 struct CryptoAnalyticsApp {
     link: ComponentLink<Self>,
-    cryptos: Option<Vec<CryptoData>>,
     last_updated: Option<chrono::DateTime<Local>>,
-    fetch_task: Option<FetchTask>,
     refresh_task: Option<TimeoutTask>,
     crypto_definitions: Vec<Crypto>,
 }
@@ -40,46 +28,44 @@ impl Component for CryptoAnalyticsApp {
     type Message = Msg;
     type Properties = ();
     fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
-        link.send_message(Msg::MakeReq);
+        link.send_message(Msg::Refresh);
 
         Self {
             link,
-            cryptos: None,
-            fetch_task: None,
             refresh_task: None,
             last_updated: None,
             crypto_definitions: vec![
                 Crypto {
-                    id: "bitcoin",
-                    icon: "btc.svg",
+                    id: String::from("bitcoin"),
+                    precision: 2,
                 },
                 Crypto {
-                    id: "ethereum",
-                    icon: "eth.svg",
+                    id: String::from("ethereum"),
+                    precision: 2,
                 },
                 Crypto {
-                    id: "chainlink",
-                    icon: "link.svg",
+                    id: String::from("chainlink"),
+                    precision: 2,
                 },
                 Crypto {
-                    id: "litecoin",
-                    icon: "ltc.svg",
+                    id: String::from("litecoin"),
+                    precision: 2,
                 },
                 Crypto {
-                    id: "bitcoin-cash",
-                    icon: "bch.svg",
+                    id: String::from("bitcoin-cash"),
+                    precision: 2,
                 },
                 Crypto {
-                    id: "unit-protocol-duck",
-                    icon: "duck.png",
+                    id: String::from("blockstack"),
+                    precision: 2,
                 },
                 Crypto {
-                    id: "blockstack",
-                    icon: "stx.svg",
+                    id: String::from("defichain"),
+                    precision: 2,
                 },
                 Crypto {
-                    id: "defichain",
-                    icon: "defichain.png",
+                    id: String::from("unit-protocol-duck"),
+                    precision: 4,
                 },
             ],
         }
@@ -87,71 +73,16 @@ impl Component for CryptoAnalyticsApp {
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
-            Msg::MakeReq => {
-                self.cryptos = None;
-
-                // get ids
-                let mut ids: String = String::from("");
-                for def in &self.crypto_definitions {
-                    ids = ids + "," + def.id;
-                }
-
-                // url for request
-                let url_request = format!("https://api.coingecko.com/api/v3/simple/price?ids={:}&vs_currencies=EUR,BTC,ETH&include_24hr_change=true", ids);
-                ConsoleService::info(&format!("Loading data: {:?}", url_request));
-
-                // create request
-                let req = Request::get(url_request)
-                    .body(Nothing)
-                    .expect("Loading data failed");
-
-                // callback to handle messaging
-                let cb =
-                    self.link
-                        .callback(|response: Response<Json<Result<Value, anyhow::Error>>>| {
-                            let Json(data) = response.into_body();
-                            Msg::Resp(data)
-                        });
-
-                // set task to avoid out of scope
-                let task = FetchService::fetch(req, cb).expect("can create task");
-                self.fetch_task = Some(task);
+            Msg::Refresh => {
+                // set update time
+                self.last_updated = Some(chrono::offset::Local::now());
 
                 // set recurring calls
                 self.refresh_task = Some(TimeoutService::spawn(
-                    Duration::from_secs(300),
-                    self.link.callback(|_| Msg::MakeReq),
+                    Duration::from_secs(60),
+                    self.link.callback(|_| Msg::Refresh),
                 ));
             }
-            Msg::Resp(resp) => match resp {
-                Ok(data) => {
-                    let mut cryptos = Vec::new();
-
-                    for def in &self.crypto_definitions {
-                        match from_value::<Price>(data[def.id].clone()) {
-                            Ok(price) => {
-                                cryptos.push(CryptoData {
-                                    definition: def.clone(),
-                                    price: price,
-                                });
-                            }
-                            Err(error) => {
-                                ConsoleService::info(&format!("Parsing price error: {:}", error));
-                            }
-                        }
-                    }
-
-                    self.cryptos = Some(cryptos);
-                    self.last_updated = Some(chrono::offset::Local::now());
-                    ConsoleService::info(&format!(
-                        "Cryptos: {:?} Time: {:?}",
-                        self.cryptos, self.last_updated
-                    ));
-                }
-                Err(error) => {
-                    ConsoleService::info(&format!("Message response error: {:}", error));
-                }
-            },
         }
         true
     }
@@ -166,35 +97,25 @@ impl Component for CryptoAnalyticsApp {
             None => String::from(""),
         };
 
-        if let Some(cryptos) = &self.cryptos {
-            let crypto_html: Vec<Html> = cryptos
-                .iter()
-                .map(|crypto_data| {
-                    html! {
-                       <CryptoGeneral price=crypto_data.price.clone() definition=crypto_data.definition.clone()/>
-                    }
-                })
-                .collect();
+        let crypto_html: Vec<Html> = self
+            .crypto_definitions
+            .iter()
+            .map(|crypto_definition| {
+                html! {
+                   <general::Component definition=crypto_definition.clone()/>
+                }
+            })
+            .collect();
 
-            html! {
-                <div>
-                    <div class="page-header">
-                        <div class="updated">{"Updated at: "}{last_updated}</div>
-                    </div>
-                    <div class=classes!("container")>
-                        {crypto_html}
-                    </div>
+        html! {
+            <div>
+                <div class="page-header">
+                    <div class="updated">{"Updated at: "}{last_updated}</div>
                 </div>
-            }
-        } else {
-            html! {
-                <div>
-                    <div class="page-header">{last_updated}</div>
-                    <div class=classes!("container")>
-                        {"loading..."}
-                    </div>
+                <div class=classes!("general-container")>
+                    {crypto_html}
                 </div>
-            }
+            </div>
         }
     }
 }

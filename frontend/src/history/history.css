@@ -1,0 +1,33 @@
+.history-column {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.history-column .label {
+    text-align: center;
+    font-size: 17px;
+    margin-bottom: 5px;
+}
+
+.history-column .prices-container {
+    justify-content: center;
+    display: flex;
+    flex-grow: 0;
+}
+
+.history-column .prices {
+    align-items: center;
+    justify-content: center;
+}
+
+.history-column .price {
+    font-size: 14px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.history-column .price-value {
+    margin-right: 15px;
+}

@@ -5,15 +5,10 @@
   <title>Crypto Analytics</title>
   <link rel="shortcut icon" href="btc.svg" type="image/svg">
 
-  <!-- Icons parsed by trunk -->
-  <link data-trunk rel="copy-file" href="./assets/btc.svg" />
-  <link data-trunk rel="copy-file" href="./assets/eth.svg" />
-  <link data-trunk rel="copy-file" href="./assets/ltc.svg" />
-  <link data-trunk rel="copy-file" href="./assets/bch.svg" />
-  <link data-trunk rel="copy-file" href="./assets/link.svg" />
-  <link data-trunk rel="copy-file" href="./assets/duck.png" />
-  <link data-trunk rel="copy-file" href="./assets/stx.svg" />
-  <link data-trunk rel="copy-file" href="./assets/defichain.png" />
+  <link data-trunk rel="copy-file" href="./src/general/general.css" />
+  <link data-trunk rel="copy-file" href="./src/history/history.css" />
+  <link rel="stylesheet" href="general.css">
+  <link rel="stylesheet" href="history.css">
 
   <style>
     body {
@@ -22,99 +17,12 @@
       padding: 0;
     }
 
-    .container {
-      display: flex;
-      padding: 10px;
-      display: flex;
-      flex-wrap: wrap;
-    }
-
     .red {
       color: #BE0000;
     }
 
     .green {
       color: #52734D;
-    }
-
-
-    .crypto-general-container {
-      flex-grow: 1;
-      flex-shrink: 1;
-      margin: 30px;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .image {
-      padding: 10px;
-      width: 24px;
-      height: 24px;
-    }
-
-    .name {
-      font-size: 20px;
-    }
-
-    .align_center {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .price {
-      font-size: 25px;
-      margin: 5px;
-    }
-
-    .change {
-      font-size: 14px;
-      margin: 5px;
-    }
-
-    .crypto-general-container-inner {
-      background-color: #F2F3F4;
-      margin-left: auto;
-      margin-right: auto;
-      width: 450px;
-      border-radius: 10px;
-      border-style: solid;
-      border-width: 1px;
-      border-color: #CDD0CB;
-    }
-
-    .crypto-general-main-price {
-      padding: 15px 15px 10px 15px;
-    }
-
-    .against-other-container {
-      font-size: 12px;
-      background-color: #D0D2CF;
-      border-radius: 0px 0px 10px 10px;
-      padding: 0px 15px 15px 15px;
-    }
-
-    .against-other {
-      flex-grow: 1;
-      margin: 10px;
-
-      display: flex;
-      flex-direction: column;
-    }
-
-    .against-other-title {
-      margin: 5px;
-    }
-
-    .against-other-data {
-      display: flex;
-      flex-direction: row;
-      margin-top: 5px;
-    }
-
-    .against-other-value {
-      flex-grow: 1;
-      margin-left: 10px;
     }
 
     .page-header {
