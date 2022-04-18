@@ -1,13 +1,5 @@
 use std::fmt::{Display, Formatter, Result};
 
-use super::price::Price;
-
-#[derive(Clone, PartialEq, Debug)]
-pub struct CryptoData {
-    pub definition: Crypto,
-    pub price: Price,
-}
-
 #[derive(Clone, PartialEq, Debug)]
 pub struct Crypto {
     pub id: String,

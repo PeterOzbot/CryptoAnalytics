@@ -8,8 +8,8 @@ use yew::{
 };
 
 use crate::{
-    common::{Data, FormattedPrice},
-    models::crypto::Crypto,
+    common::FormattedPrice,
+    models::{ApiData, Crypto},
 };
 
 use super::message::Message;
@@ -21,7 +21,7 @@ pub struct Properties {
 
 pub struct Component {
     properties: Properties,
-    data: Option<Data>,
+    data: Option<ApiData>,
     link: yew::ComponentLink<Self>,
     fetch_task: Option<FetchTask>,
 }
@@ -31,7 +31,6 @@ impl yew::Component for Component {
     type Message = super::message::Message;
 
     fn create(properties: Self::Properties, link: yew::ComponentLink<Self>) -> Self {
-        link.send_message(super::message::Message::MakeReq);
         Self {
             properties,
             data: None,
@@ -76,9 +75,13 @@ impl yew::Component for Component {
         } else {
             // loading indicator
             yew::html! {
-                <div>
-                    {"loading..."}
+                <div class="general-row">
+                <div class="loading-info">
+                    <div class="stage">
+                        <div class="dot-carousel"></div>
+                    </div>
                 </div>
+            </div>
             }
         }
     }
@@ -89,10 +92,13 @@ impl yew::Component for Component {
 
                 // url for request
                 let url_request = format!("https://api.coingecko.com/api/v3/coins/{:}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false",self.properties.definition.id);
-                ConsoleService::info(&format!("Loading data: {:?}", url_request));
+                ConsoleService::info(&format!(
+                    "{:} -> Loading data: {:?}",
+                    self.properties.definition.id, url_request
+                ));
 
                 // create request
-                let req = Request::get(url_request).body(Nothing).expect(
+                let req = Request::get(&url_request).body(Nothing).expect(
                     format!(
                         "Loading general data for {:} failed.",
                         self.properties.definition.id
@@ -101,35 +107,41 @@ impl yew::Component for Component {
                 );
 
                 // callback to handle messaging
-                let cb =
-                    self.link
-                        .callback(|response: Response<Json<Result<Data, anyhow::Error>>>| {
-                            let Json(data) = response.into_body();
-                            Message::Resp(data)
-                        });
+                let cb = self.link.callback(
+                    |response: Response<Json<Result<ApiData, anyhow::Error>>>| {
+                        let Json(data) = response.into_body();
+                        Message::Resp(data)
+                    },
+                );
 
                 // set task to avoid out of scope
-                let task = FetchService::fetch(req, cb).expect("can create task");
+                let task = FetchService::fetch(req, cb).expect(&format!(
+                    "{:} -> Fetch failed: {:?}",
+                    self.properties.definition.id, url_request
+                ));
                 self.fetch_task = Some(task);
             }
             Message::Resp(resp) => match resp {
                 Ok(data) => {
                     self.data = Some(data);
                     ConsoleService::info(&format!(
-                        "Loaded for {:} Data: {:?}",
+                        "{:} -> Loaded data: {:?}",
                         self.properties.definition.id, self.data
                     ));
                 }
                 Err(error) => {
-                    ConsoleService::info(&format!("Message response error: {:}", error));
+                    ConsoleService::info(&format!(
+                        "{:} -> Message response error: {:}",
+                        self.properties.definition.id, error
+                    ));
                 }
             },
         }
         true
     }
 
-    fn change(&mut self, properties: Self::Properties) -> yew::ShouldRender {
-        self.properties = properties;
-        true
+    fn change(&mut self, _: Self::Properties) -> yew::ShouldRender {
+        self.link.send_message(super::message::Message::MakeReq);
+        false
     }
 }

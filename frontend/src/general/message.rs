@@ -1,6 +1,6 @@
-use crate::common::Data;
+use crate::models::ApiData;
 
 pub enum Message {
     MakeReq,
-    Resp(Result<Data, anyhow::Error>),
+    Resp(Result<ApiData, anyhow::Error>),
 }

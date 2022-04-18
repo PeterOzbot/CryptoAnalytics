@@ -1,7 +1,12 @@
 #[derive(Deserialize, Clone, PartialEq, Debug)]
-pub struct Data {
+pub struct ApiData {
     pub image: Image,
     pub market_data: MarketData,
+}
+
+#[derive(Deserialize, Clone, PartialEq, Debug)]
+pub struct Image {
+    pub thumb: String,
 }
 
 #[derive(Deserialize, Clone, PartialEq, Debug)]
@@ -20,8 +25,4 @@ pub struct Price {
     pub eur: f64,
     pub btc: f64,
     pub eth: f64,
-}
-#[derive(Deserialize, Clone, PartialEq, Debug)]
-pub struct Image {
-    pub thumb: String,
 }

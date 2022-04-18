@@ -1,8 +1,8 @@
 use yew::classes;
 
 use crate::{
-    common::{FormattedPrice, Price},
-    models::crypto::Crypto,
+    common::FormattedPrice,
+    models::{Crypto, Price},
 };
 
 #[derive(yew::Properties, Clone, PartialEq)]
