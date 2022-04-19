@@ -8,7 +8,7 @@
     margin: 5px;
     margin-left: 50px;
     margin-right: 50px;
-    padding: 10px;
+    padding: 5px;
 
     background-color: #F2F3F4;
     border-radius: 10px;
@@ -44,6 +44,7 @@
 
 .general-row img {
     margin-right: 20px;
+    margin-left: 10px;
     width: 35px;
     height: 35px;
 }

@@ -10,6 +10,11 @@ use crate::models::Crypto;
 
 use super::message::Message;
 
+#[derive(yew::Properties, Clone, PartialEq)]
+pub struct Properties {
+    pub crypto_definitions: Vec<Crypto>,
+}
+
 pub struct Component {
     link: ComponentLink<Self>,
     last_updated: Option<chrono::DateTime<Local>>,
@@ -19,48 +24,15 @@ pub struct Component {
 
 impl yew::Component for Component {
     type Message = Message;
-    type Properties = ();
-    fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
+    type Properties = Properties;
+    fn create(properties: Self::Properties, link: ComponentLink<Self>) -> Self {
         link.send_message(Message::Refresh);
 
         Self {
             link,
             refresh_task: None,
             last_updated: None,
-            crypto_definitions: vec![
-                Crypto {
-                    id: String::from("bitcoin"),
-                    precision: 2,
-                },
-                Crypto {
-                    id: String::from("ethereum"),
-                    precision: 2,
-                },
-                Crypto {
-                    id: String::from("chainlink"),
-                    precision: 2,
-                },
-                Crypto {
-                    id: String::from("litecoin"),
-                    precision: 2,
-                },
-                Crypto {
-                    id: String::from("bitcoin-cash"),
-                    precision: 2,
-                },
-                Crypto {
-                    id: String::from("blockstack"),
-                    precision: 2,
-                },
-                Crypto {
-                    id: String::from("defichain"),
-                    precision: 2,
-                },
-                Crypto {
-                    id: String::from("unit-protocol-duck"),
-                    precision: 4,
-                },
-            ],
+            crypto_definitions: properties.crypto_definitions,
         }
     }
 
