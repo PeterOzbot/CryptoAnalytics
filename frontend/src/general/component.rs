@@ -91,17 +91,17 @@ impl yew::Component for Component {
                 self.data = None;
 
                 // url for request
-                let url_request = format!("https://api.coingecko.com/api/v3/coins/{:}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false",self.properties.definition.id);
+                let url_request = format!("https://api.coingecko.com/api/v3/coins/{:}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false",self.properties.definition.api_key);
                 ConsoleService::info(&format!(
                     "{:} -> Loading data: {:?}",
-                    self.properties.definition.id, url_request
+                    self.properties.definition.api_key, url_request
                 ));
 
                 // create request
                 let req = Request::get(&url_request).body(Nothing).expect(
                     format!(
                         "Loading general data for {:} failed.",
-                        self.properties.definition.id
+                        self.properties.definition.api_key
                     )
                     .as_str(),
                 );
@@ -117,7 +117,7 @@ impl yew::Component for Component {
                 // set task to avoid out of scope
                 let task = FetchService::fetch(req, cb).expect(&format!(
                     "{:} -> Fetch failed: {:?}",
-                    self.properties.definition.id, url_request
+                    self.properties.definition.api_key, url_request
                 ));
                 self.fetch_task = Some(task);
             }
@@ -126,13 +126,13 @@ impl yew::Component for Component {
                     self.data = Some(data);
                     ConsoleService::info(&format!(
                         "{:} -> Loaded data: {:?}",
-                        self.properties.definition.id, self.data
+                        self.properties.definition.api_key, self.data
                     ));
                 }
                 Err(error) => {
                     ConsoleService::info(&format!(
                         "{:} -> Message response error: {:}",
-                        self.properties.definition.id, error
+                        self.properties.definition.api_key, error
                     ));
                 }
             },

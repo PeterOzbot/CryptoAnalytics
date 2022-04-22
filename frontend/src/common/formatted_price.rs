@@ -8,7 +8,7 @@ pub struct FormattedPrice {
 }
 
 impl FormattedPrice {
-    pub fn format_data(api_data: &ApiData, precision: usize) -> FormattedPrice {
+    pub fn format_data(api_data: &ApiData, precision: i16) -> FormattedPrice {
         FormattedPrice {
             value: PriceFormatting::format_price(api_data.market_data.current_price.eur, precision),
             change_direction: PriceFormatting::handle_price_change(
@@ -32,7 +32,7 @@ impl FormattedPrice {
         current_price: f64,
         price_change: f64,
         use_absolute: bool,
-        precision: usize,
+        precision: i16,
     ) -> FormattedPrice {
         FormattedPrice {
             value: FormattedPrice::get_price(current_price, price_change, use_absolute, precision),
@@ -45,7 +45,7 @@ impl FormattedPrice {
         current_price: f64,
         price_change: f64,
         use_absolute: bool,
-        precision: usize,
+        precision: i16,
     ) -> String {
         if use_absolute {
             PriceFormatting::format_price(current_price, precision)

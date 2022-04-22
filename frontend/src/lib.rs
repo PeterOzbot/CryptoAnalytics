@@ -16,39 +16,39 @@ pub fn run_app() {
     App::<analytics::Component>::new().mount_to_body_with_props(analytics::Properties {
         crypto_definitions: vec![
             Crypto {
-                id: String::from("bitcoin"),
+                api_key: String::from("bitcoin"),
                 precision: 2,
             },
             Crypto {
-                id: String::from("ethereum"),
+                api_key: String::from("ethereum"),
                 precision: 2,
             },
             Crypto {
-                id: String::from("chainlink"),
+                api_key: String::from("chainlink"),
                 precision: 2,
             },
             Crypto {
-                id: String::from("litecoin"),
+                api_key: String::from("litecoin"),
                 precision: 2,
             },
             Crypto {
-                id: String::from("bitcoin-cash"),
+                api_key: String::from("bitcoin-cash"),
                 precision: 2,
             },
             Crypto {
-                id: String::from("blockstack"),
+                api_key: String::from("blockstack"),
                 precision: 2,
             },
             Crypto {
-                id: String::from("defichain"),
+                api_key: String::from("defichain"),
                 precision: 2,
             },
             Crypto {
-                id: String::from("binancecoin"),
+                api_key: String::from("binancecoin"),
                 precision: 2,
             },
             Crypto {
-                id: String::from("unit-protocol-duck"),
+                api_key: String::from("unit-protocol-duck"),
                 precision: 4,
             },
         ],
