@@ -1,3 +1,4 @@
+mod endpoints;
 mod rest_server;
 mod state;
 

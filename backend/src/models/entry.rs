@@ -1,26 +1,15 @@
 use chrono::NaiveDateTime;
-use serde::{Serialize, Serializer};
+use serde::Serialize;
 use sqlx::types::BigDecimal;
 use uuid::Uuid;
 
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 pub struct Entry {
     pub id: Uuid,
-    pub definition_id: String,
-    pub date_time: NaiveDateTime,
-    pub amount: BigDecimal,
-    pub withdraw_fee: BigDecimal,
-    pub price: BigDecimal,
-    pub purchase_fee: BigDecimal,
-}
-
-#[derive(Serialize, Debug)]
-pub struct EntryResponse {
-    pub id: Uuid,
-    pub definition_id: String,
-    pub date_time: NaiveDateTime,
-    pub amount: String,
-    pub withdraw_fee: String,
-    pub price: String,
-    pub purchase_fee: String,
+    pub definition_id: String,    // crypto api_key
+    pub date_time: NaiveDateTime, // when was purchased
+    pub amount: BigDecimal,       // how much of crypto currency
+    pub withdraw_fee: BigDecimal, // fee to withdraw from exchange - in crypto
+    pub price: BigDecimal,        // price in EUR
+    pub purchase_fee: BigDecimal, // exchange fee in EUR
 }
