@@ -9,6 +9,23 @@ Written in Rust with Yew.
 Crypto data:
 https://www.coingecko.com/api/documentations/v3
 
+# Run app
+## Frontend
+Run frontend:
+```
+trunk serve
+```
+Configuration in Trunk.toml.
+## Backend
+Run and watch for changes:
+```
+cargo watch -c -w src -x run
+```
+Host name and port defined in .env.
+
+# State management
+TODO: https://github.com/intendednull/yewdux
+
 # Docker
 ```
 sudo docker build -t crypto-analytics .
@@ -21,11 +38,6 @@ sudo docker run -dp 1080:80 --restart always --name crypto-analytics
 docker tag crypto-analytics:latest peterozbot/crypto-analytics:latest
 
 docker push peterozbot/crypto-analytics:latest
-```
-
-# Cargo
-```
-cargo watch -c -w src -x run
 ```
 
 # PostgreSQL

@@ -27,6 +27,15 @@ impl RestServer {
 
     async fn server(db_pool: PgPool) -> Server<State> {
         let mut app = tide::with_state(State { db_pool: db_pool });
+
+        // CORS
+        app.with(
+            tide::security::CorsMiddleware::new()
+                .allow_methods("GET".parse::<tide::http::headers::HeaderValue>().unwrap())
+                .allow_origin(tide::security::Origin::from("*"))
+                .allow_credentials(true),
+        );
+
         Endpoints::register(&mut app);
         app
     }

@@ -18,3 +18,4 @@ anyhow = "1"
 yew-router = "0.15.0"
 chrono = { version = "0.4", features = ["wasmbind"] }
 thousands = "0.2.0"
+load-dotenv = "0.1.2"
