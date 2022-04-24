@@ -1,0 +1,23 @@
+.page-header {
+    margin-bottom: 5px;
+    background-color: #A7BBC7;
+
+    flex-basis: auto;
+    flex-grow: 0;
+    flex-shrink: 1;
+}
+
+.updated {
+    padding: 15px;
+}
+
+.main-container {
+    display: flex;
+    flex-flow: column;
+    height: 100%;
+}
+
+.page-content {
+    display: flex;
+    flex: 1 1 auto;
+}

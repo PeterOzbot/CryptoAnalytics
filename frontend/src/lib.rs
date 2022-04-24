@@ -2,15 +2,18 @@
 extern crate serde;
 
 mod analytics;
+mod application;
 mod common;
 mod general;
 mod history;
 mod models;
+mod portfolio;
+mod routing;
 
 use wasm_bindgen::prelude::wasm_bindgen;
 use yew::App;
 
 #[wasm_bindgen(start)]
 pub fn run_app() {
-    App::<analytics::Component>::new().mount_as_body();
+    App::<application::Component>::new().mount_as_body();
 }

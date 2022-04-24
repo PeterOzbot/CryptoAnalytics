@@ -6,11 +6,15 @@
     color: #52734D;
 }
 
-.page-header {
-    margin-bottom: 5px;
-    background-color: #A7BBC7;
+.analytics-container {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
 }
 
-.updated {
-    padding: 15px;
+.loading-container {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    justify-content: center;
 }

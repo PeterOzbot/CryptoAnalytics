@@ -1,13 +1,11 @@
-use chrono::Local;
-use std::{time::Duration, vec};
+use std::vec;
 use yew::{
     classes,
     format::{Json, Nothing},
     html,
     services::{
         fetch::{FetchTask, Request, Response},
-        timeout::TimeoutTask,
-        ConsoleService, FetchService, TimeoutService,
+        ConsoleService, FetchService,
     },
     ComponentLink, Html, ShouldRender,
 };
@@ -21,8 +19,6 @@ load_dotenv!();
 
 pub struct Component {
     link: ComponentLink<Self>,
-    last_updated: Option<chrono::DateTime<Local>>,
-    refresh_task: Option<TimeoutTask>,
     fetch_task: Option<FetchTask>,
     crypto_definitions: Option<Vec<Crypto>>,
 }
@@ -33,12 +29,9 @@ impl yew::Component for Component {
 
     fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
         link.send_message(Message::LoadDefinitions);
-
         Self {
             link,
-            refresh_task: None,
             fetch_task: None,
-            last_updated: None,
             crypto_definitions: None,
         }
     }
@@ -77,7 +70,6 @@ impl yew::Component for Component {
                         "Definitions -> Loaded data: {:?}",
                         self.crypto_definitions
                     ));
-                    self.link.send_message(Message::Refresh);
                 }
                 Err(error) => {
                     ConsoleService::info(&format!(
@@ -86,31 +78,11 @@ impl yew::Component for Component {
                     ));
                 }
             },
-            Message::Refresh => {
-                // set update time
-                self.last_updated = Some(chrono::offset::Local::now());
-
-                // set recurring calls
-                self.refresh_task = Some(TimeoutService::spawn(
-                    Duration::from_secs(60),
-                    self.link.callback(|_| Message::Refresh),
-                ));
-            }
         }
         true
     }
 
-    fn change(&mut self, _props: Self::Properties) -> ShouldRender {
-        false
-    }
-
     fn view(&self) -> Html {
-        let last_updated = match &self.last_updated {
-            Some(date) => date.format("%d.%m ~ %H:%M").to_string(),
-            None => String::from("no date"),
-        };
-        ConsoleService::info(&format!("Refresh: {:}", last_updated));
-
         let crypto_html: Vec<Html>;
         if let Some(crypto_definitions) = &self.crypto_definitions {
             crypto_html = crypto_definitions
@@ -124,20 +96,22 @@ impl yew::Component for Component {
         } else {
             crypto_html = vec![html! {
                 <div class=classes!("loading-container")>
-                    {"....loading..."}
+                    <div class="stage">
+                        <div class="dot-carousel"></div>
+                    </div>
                 </div>
             }];
         }
 
         html! {
-            <div>
-                <div class="page-header">
-                    <div class="updated">{"Updated at: "}{last_updated}</div>
-                </div>
-                <div class=classes!("general-container")>
-                    {crypto_html}
-                </div>
+            <div class=classes!("analytics-container")>
+                {crypto_html}
             </div>
         }
+    }
+
+    fn change(&mut self, _props: Self::Properties) -> ShouldRender {
+        self.link.send_message(Message::LoadDefinitions);
+        false
     }
 }

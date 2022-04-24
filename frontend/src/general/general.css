@@ -1,9 +1,3 @@
-.general-container {
-    display: flex;
-    display: flex;
-    flex-direction: column;
-}
-
 .general-row {
     margin: 5px;
     margin-left: 50px;
@@ -69,39 +63,3 @@
 .general-row .legend div:first-child {
     margin-top: 20px;
 }
-
-/**
- * ==============================================
- * Dot Carousel
- * ==============================================
- */
-
-.dot-carousel {
-    position: relative;
-    left: -9999px;
-    width: 10px;
-    height: 10px;
-    border-radius: 5px;
-    background-color: #A7BBC7;
-    color: #A7BBC7;
-    box-shadow: 9979px 0 0 0 #A7BBC7, 9999px 0 0 0 #A7BBC7, 10019px 0 0 0 #A7BBC7;
-    animation: dotCarousel 1.5s infinite linear;
-}
-
-@keyframes dotCarousel {
-    0% {
-        box-shadow: 9979px 0 0 -1px #A7BBC7, 9999px 0 0 1px #A7BBC7, 10019px 0 0 -1px #A7BBC7;
-    }
-
-    50% {
-        box-shadow: 10019px 0 0 -1px #A7BBC7, 9979px 0 0 -1px #A7BBC7, 9999px 0 0 1px #A7BBC7;
-    }
-
-    100% {
-        box-shadow: 9999px 0 0 1px #A7BBC7, 10019px 0 0 -1px #A7BBC7, 9979px 0 0 -1px #A7BBC7;
-    }
-}
-
-/*
- * ==============================================
-*/

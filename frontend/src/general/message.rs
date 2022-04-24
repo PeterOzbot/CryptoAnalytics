@@ -1,6 +1,6 @@
 use crate::models::ApiData;
 
 pub enum Message {
-    MakeReq,
-    Resp(Result<ApiData, anyhow::Error>),
+    LoadPrices,
+    PricesLoaded(Result<ApiData, anyhow::Error>),
 }

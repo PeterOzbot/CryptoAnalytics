@@ -31,6 +31,7 @@ impl yew::Component for Component {
     type Message = super::message::Message;
 
     fn create(properties: Self::Properties, link: yew::ComponentLink<Self>) -> Self {
+        link.send_message(super::message::Message::LoadPrices);
         Self {
             properties,
             data: None,
@@ -87,7 +88,7 @@ impl yew::Component for Component {
     }
     fn update(&mut self, msg: Self::Message) -> yew::ShouldRender {
         match msg {
-            Message::MakeReq => {
+            Message::LoadPrices => {
                 self.data = None;
 
                 // url for request
@@ -110,7 +111,7 @@ impl yew::Component for Component {
                 let cb = self.link.callback(
                     |response: Response<Json<Result<ApiData, anyhow::Error>>>| {
                         let Json(data) = response.into_body();
-                        Message::Resp(data)
+                        Message::PricesLoaded(data)
                     },
                 );
 
@@ -121,7 +122,7 @@ impl yew::Component for Component {
                 ));
                 self.fetch_task = Some(task);
             }
-            Message::Resp(resp) => match resp {
+            Message::PricesLoaded(resp) => match resp {
                 Ok(data) => {
                     self.data = Some(data);
                     ConsoleService::info(&format!(
@@ -141,7 +142,7 @@ impl yew::Component for Component {
     }
 
     fn change(&mut self, _: Self::Properties) -> yew::ShouldRender {
-        self.link.send_message(super::message::Message::MakeReq);
+        self.link.send_message(super::message::Message::LoadPrices);
         false
     }
 }
