@@ -2,3 +2,5 @@
 **/target
 
 **/scripts/data.sql
+
+**/migrations/*_data.sql

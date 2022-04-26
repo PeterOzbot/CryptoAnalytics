@@ -13,7 +13,7 @@ RUN rustup target add wasm32-unknown-unknown
 RUN cargo install trunk
 
 # Copy the files in your machine to the Docker image
-COPY ./ ./
+COPY ./frontend ./
 
 # build app
 RUN trunk build

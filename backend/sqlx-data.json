@@ -1,0 +1,83 @@
+{
+  "db": "PostgreSQL",
+  "2c61939c85b1072b8243e9983a1b8f2061bdb5ced81b3007e4816f4a0df45179": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Uuid"
+        },
+        {
+          "name": "definition_id",
+          "ordinal": 1,
+          "type_info": "Text"
+        },
+        {
+          "name": "date_time",
+          "ordinal": 2,
+          "type_info": "Timestamp"
+        },
+        {
+          "name": "amount",
+          "ordinal": 3,
+          "type_info": "Numeric"
+        },
+        {
+          "name": "withdraw_fee",
+          "ordinal": 4,
+          "type_info": "Numeric"
+        },
+        {
+          "name": "price",
+          "ordinal": 5,
+          "type_info": "Numeric"
+        },
+        {
+          "name": "purchase_fee",
+          "ordinal": 6,
+          "type_info": "Numeric"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Text"
+        ]
+      }
+    },
+    "query": "\n            SELECT id, definition_id, date_time, amount, withdraw_fee, price, purchase_fee from entries\n            WHERE definition_id = $1\n            "
+  },
+  "45b59b41b47e9418fa2629b98ae49d88329cdc7d2ab4cf3f76d3d2f1306603d0": {
+    "describe": {
+      "columns": [
+        {
+          "name": "api_key",
+          "ordinal": 0,
+          "type_info": "Text"
+        },
+        {
+          "name": "precision",
+          "ordinal": 1,
+          "type_info": "Int2"
+        }
+      ],
+      "nullable": [
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": []
+      }
+    },
+    "query": "\n            SELECT api_key, precision from definitions\n            "
+  }
+}
