@@ -2,4 +2,4 @@
 # The address to serve on.
 addr = "localhost"
 # The port to serve on.
-port = 5020
+port = 8001

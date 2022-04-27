@@ -1,0 +1,39 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres
+    container_name: crypto-analytics-postgresql
+    ports:
+      - "1010:5432"
+    volumes:
+      - ~/crypto-analytics:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+  backend:
+    container_name: crypto-analytics-backend
+    image: crypto-analytics-backend
+    build:
+      context: .
+      dockerfile: backend.Dockerfile
+    ports:
+      - "1020:8000"
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@db:5432/crypto_analytics
+      - SERVER_URL=0.0.0.0:8000
+    depends_on:
+      - db
+  frontend:
+    container_name: crypto-analytics-frontend
+    image: crypto-analytics-frontend
+    build:
+      context: .
+      dockerfile: frontend.Dockerfile
+      args:
+        - API_URL=http://localhost:1020
+    ports:
+      - "1030:80"
+    depends_on:
+      - backend

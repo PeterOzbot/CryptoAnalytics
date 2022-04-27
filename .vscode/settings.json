@@ -6,6 +6,7 @@
         "chainlink",
         "chrono",
         "defichain",
+        "dotenv",
         "litecoin",
         "peterozbot",
         "sqlx"

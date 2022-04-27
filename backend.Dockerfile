@@ -22,7 +22,7 @@ RUN cargo build --release
 FROM alpine:latest
 
 # expose the server port
-EXPOSE 5010
+EXPOSE 8000
 
 # copy app
 COPY --from=build-step /home/rust/src/backend/target/x86_64-unknown-linux-musl/release/backend  /backend

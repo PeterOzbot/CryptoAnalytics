@@ -2,7 +2,7 @@ use std::time::Duration;
 
 use chrono::Local;
 use yew::{
-    classes, html,
+    html,
     services::{timeout::TimeoutTask, ConsoleService, TimeoutService},
     ComponentLink, Html, ShouldRender,
 };
@@ -42,7 +42,7 @@ impl yew::Component for Component {
 
                 // set recurring calls
                 self.refresh_task = Some(TimeoutService::spawn(
-                    Duration::from_secs(60),
+                    Duration::from_secs(300),
                     self.link.callback(|_| Message::Refresh),
                 ));
             }

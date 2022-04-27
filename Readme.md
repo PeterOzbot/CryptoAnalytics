@@ -9,7 +9,7 @@ Written in Rust with Yew.
 Crypto data:
 https://www.coingecko.com/api/documentations/v3
 
-# Run app
+# Development
 ## Frontend
 Run frontend:
 ```
@@ -28,39 +28,38 @@ TODO: https://github.com/intendednull/yewdux
 
 # Docker
 
+*Log into contaier with sh*
+```
+sudo docker exec -it crypto-analytics-frontend /bin/sh
+```
+
+*Docker compose*
+```
+sudo docker-compose up -d
+sudo docker-compose stop
+```
+
+
 ### Frontend:
 ```
-sudo docker build --file=frontend.dockerfile -t crypto-analytics-frontend .
+sudo docker build --build-arg API_URL=http://localhost:1020 --file=frontend.Dockerfile -t crypto-analytics-frontend ./
 ```
 
 ### Backend
 ```
-sudo docker build --file=backend.dockerfile -t crypto-analytics-backend .
+sudo docker build --file=backend.Dockerfile -t crypto-analytics-backend .
+
+sudo docker run -p 1020:8000 -e DATABASE_URL='postgres://postgres:postgres@db:5432/crypto_analytics' -e SERVER_URL='localhost:8000' --name crypto-analytics-backend crypto-analytics-backend:latest
 ```
 
-sudo docker run -dp 1080:80 --restart always --name crypto-analytics crypto-analytics:latest
-
-sudo docker run -dp 1080:80 --restart always --name crypto-analytics-frontend crypto-analytics-frontend:latest
-sudo docker run -dp 5010:5010 --restart always --name crypto-analytics-backend crypto-analytics-backend:latest
-
-
-sudo docker run -p 5010:5010 -e DATABASE_URL='postgres://postgres:postgres@172.19.0.2:5432/crypto_analytics' -e SERVER_URL='172.19.0.3:5010' --network crypto-analytics-network --name crypto-analytics-backend crypto-analytics-backend:latest
-
 ### Docker Hub
+Example:
 ```
 docker tag crypto-analytics:latest peterozbot/crypto-analytics:latest
 
 docker push peterozbot/crypto-analytics:latest
 ```
 
-### Docker network
-
-```
-sudo docker network create crypto-analytics-network
-sudo docker network inspect  crypto-analytics-network
-sudo docker network connect crypto-analytics-network crypto-analytics-backend
-sudo docker network connect crypto-analytics-network crypto-analytics-postgresql
-```
 # PostgreSQL
 
 ```
@@ -73,10 +72,6 @@ Navigate to scripts folder and execute:
 psql -h localhost -p 5432 -U postgres -a -f schema.sql -f data.sql;
 ```
 
-*Log into postgress contaier with bash*
-```
-sudo docker exec -it crypto-analytics-postgresql bash
-```
 *Connect with psql*
 ```
 psql -h localhost -p 5432 -U postgres
