@@ -10,9 +10,8 @@ use yew::{
     ComponentLink, Html, ShouldRender,
 };
 
-use crate::models::Crypto;
-
 use super::message::Message;
+use crate::models::Crypto;
 
 use load_dotenv::load_dotenv;
 load_dotenv!();
@@ -42,7 +41,7 @@ impl yew::Component for Component {
                 self.crypto_definitions = None;
 
                 // url for request
-                let url_request = format!("{:}{:}", env!("API_URL"), "/definitions");
+                let url_request = format!("{:}/definitions", env!("API_URL"));
                 ConsoleService::info(&format!("Definitions -> Loading data: {:?}", url_request));
 
                 // create request
@@ -89,7 +88,7 @@ impl yew::Component for Component {
                 .iter()
                 .map(|crypto_definition| {
                     html! {
-                       <crate::general::Component definition=crypto_definition.clone()/>
+                       <super::general::Component definition=crypto_definition.clone()/>
                     }
                 })
                 .collect();

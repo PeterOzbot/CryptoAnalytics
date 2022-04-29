@@ -1,3 +1,6 @@
+use crate::models::Crypto;
+
 pub enum Message {
-    LoadData,
+    LoadDefinitions,
+    DefinitionsLoaded(Result<Vec<Crypto>, anyhow::Error>),
 }

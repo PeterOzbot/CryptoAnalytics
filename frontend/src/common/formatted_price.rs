@@ -1,5 +1,5 @@
 use super::PriceFormatting;
-use crate::models::ApiData;
+use crate::models::PricesData;
 
 pub struct FormattedPrice {
     pub value: String,
@@ -8,7 +8,7 @@ pub struct FormattedPrice {
 }
 
 impl FormattedPrice {
-    pub fn format_data(api_data: &ApiData, precision: i16) -> FormattedPrice {
+    pub fn format_data(api_data: &PricesData, precision: i16) -> FormattedPrice {
         FormattedPrice {
             value: PriceFormatting::format_price(api_data.market_data.current_price.eur, precision),
             change_direction: PriceFormatting::handle_price_change(

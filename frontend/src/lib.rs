@@ -4,8 +4,6 @@ extern crate serde;
 mod analytics;
 mod application;
 mod common;
-mod general;
-mod history;
 mod models;
 mod portfolio;
 mod routing;

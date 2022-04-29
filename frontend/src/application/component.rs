@@ -69,7 +69,7 @@ impl yew::Component for Component {
 
                <div class="page-content">
                    <Router<ApplicationRoutes, ()>
-                       render = Router::render(move |switch: ApplicationRoutes| {
+                       render = Router::render(|switch: ApplicationRoutes| {
                            match switch {
                                ApplicationRoutes::Home => {
                                    html! {

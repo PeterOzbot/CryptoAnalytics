@@ -1,0 +1,40 @@
+.ledger-column {
+    margin: 20px;
+    flex-grow: 1;
+    flex-shrink: 1;
+    display: flex;
+    flex-flow: column;
+}
+
+.ledger-column .loading-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ledger-column .ledger-entry {
+    display: flex;
+    flex-flow: row;
+}
+
+.ledger-column .ledger-entry .amount {
+    margin-right: 2px;
+}
+
+.ledger-column .ledger-entry .price {
+    margin-left: 2px;
+}
+
+.ledger-column .ledger-sum {
+    margin-top: 10px;
+    display: flex;
+    flex-flow: row;
+}
+
+.ledger-column .ledger-sum .amount {
+    margin-right: 2px;
+}
+
+.ledger-column .ledger-sum .price {
+    margin-left: 2px;
+}

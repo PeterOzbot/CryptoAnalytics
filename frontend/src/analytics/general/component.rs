@@ -9,7 +9,7 @@ use yew::{
 
 use crate::{
     common::FormattedPrice,
-    models::{ApiData, Crypto},
+    models::{Crypto, PricesData},
 };
 
 use super::message::Message;
@@ -21,7 +21,7 @@ pub struct Properties {
 
 pub struct Component {
     properties: Properties,
-    data: Option<ApiData>,
+    data: Option<PricesData>,
     link: yew::ComponentLink<Self>,
     fetch_task: Option<FetchTask>,
 }
@@ -56,15 +56,15 @@ impl yew::Component for Component {
                         </div>
                     </div>
 
-                    <crate::history::Component label="24h" price_change=data.market_data.price_change_percentage_24h_in_currency.clone() current_price=data.market_data.current_price.clone() definition= self.properties.definition.clone() use_absolute=true />
+                    <crate::analytics::history::Component label="24h" price_change=data.market_data.price_change_percentage_24h_in_currency.clone() current_price=data.market_data.current_price.clone() definition= self.properties.definition.clone() use_absolute=true />
 
-                    <crate::history::Component label="7d" price_change=data.market_data.price_change_percentage_7d_in_currency.clone() current_price=data.market_data.current_price.clone() definition= self.properties.definition.clone() use_absolute=false/>
+                    <crate::analytics::history::Component label="7d" price_change=data.market_data.price_change_percentage_7d_in_currency.clone() current_price=data.market_data.current_price.clone() definition= self.properties.definition.clone() use_absolute=false/>
 
-                    <crate::history::Component label="30d" price_change=data.market_data.price_change_percentage_30d_in_currency.clone() current_price=data.market_data.current_price.clone() definition= self.properties.definition.clone() use_absolute=false/>
+                    <crate::analytics::history::Component label="30d" price_change=data.market_data.price_change_percentage_30d_in_currency.clone() current_price=data.market_data.current_price.clone() definition= self.properties.definition.clone() use_absolute=false/>
 
-                    <crate::history::Component label="200d" price_change=data.market_data.price_change_percentage_200d_in_currency.clone() current_price=data.market_data.current_price.clone() definition= self.properties.definition.clone() use_absolute=false/>
+                    <crate::analytics::history::Component label="200d" price_change=data.market_data.price_change_percentage_200d_in_currency.clone() current_price=data.market_data.current_price.clone() definition= self.properties.definition.clone() use_absolute=false/>
 
-                    <crate::history::Component label="1y" price_change=data.market_data.price_change_percentage_1y_in_currency.clone() current_price=data.market_data.current_price.clone() definition= self.properties.definition.clone() use_absolute=false/>
+                    <crate::analytics::history::Component label="1y" price_change=data.market_data.price_change_percentage_1y_in_currency.clone() current_price=data.market_data.current_price.clone() definition= self.properties.definition.clone() use_absolute=false/>
 
                     <div class="legend">
                         <div>{"EUR"}</div>
@@ -109,7 +109,7 @@ impl yew::Component for Component {
 
                 // callback to handle messaging
                 let cb = self.link.callback(
-                    |response: Response<Json<Result<ApiData, anyhow::Error>>>| {
+                    |response: Response<Json<Result<PricesData, anyhow::Error>>>| {
                         let Json(data) = response.into_body();
                         Message::PricesLoaded(data)
                     },
@@ -117,7 +117,7 @@ impl yew::Component for Component {
 
                 // set task to avoid out of scope
                 let task = FetchService::fetch(req, cb).expect(&format!(
-                    "{:} -> Fetch failed: {:?}",
+                    "{:} -> General, Fetch failed: {:?}",
                     self.properties.definition.api_key, url_request
                 ));
                 self.fetch_task = Some(task);
@@ -132,7 +132,7 @@ impl yew::Component for Component {
                 }
                 Err(error) => {
                     ConsoleService::info(&format!(
-                        "{:} -> Message response error: {:}",
+                        "{:} -> General, response error: {:}",
                         self.properties.definition.api_key, error
                     ));
                 }

@@ -1,5 +1,5 @@
 #[derive(Deserialize, Clone, PartialEq, Debug)]
-pub struct ApiData {
+pub struct PricesData {
     pub image: Image,
     pub market_data: MarketData,
 }
