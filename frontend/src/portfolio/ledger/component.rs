@@ -1,11 +1,7 @@
-use std::ops::{Add, Div, Mul, Sub};
+use std::ops::{Add, Mul, Sub};
 
-use bigdecimal::{
-    num_bigint::{BigInt, Sign},
-    BigDecimal, Zero,
-};
+use bigdecimal::{BigDecimal, Zero};
 use yew::{
-    classes,
     format::{Json, Nothing},
     html,
     services::{

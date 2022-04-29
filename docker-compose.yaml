@@ -4,6 +4,7 @@ services:
   db:
     image: postgres
     container_name: crypto-analytics-postgresql
+    restart: always
     ports:
       - "1010:5432"
     volumes:
@@ -13,8 +14,9 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
   backend:
-    container_name: crypto-analytics-backend
     image: crypto-analytics-backend
+    container_name: crypto-analytics-backend
+    restart: always
     build:
       context: .
       dockerfile: backend.Dockerfile
@@ -26,8 +28,9 @@ services:
     depends_on:
       - db
   frontend:
-    container_name: crypto-analytics-frontend
     image: crypto-analytics-frontend
+    container_name: crypto-analytics-frontend
+    restart: always
     build:
       context: .
       dockerfile: frontend.Dockerfile
