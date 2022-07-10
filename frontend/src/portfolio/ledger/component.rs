@@ -1,14 +1,16 @@
 use std::ops::{Add, Mul, Sub};
 
 use bigdecimal::{BigDecimal, Zero};
+use gloo_console::info;
 use yew::{
-    format::{Json, Nothing},
+    //format::{Json, Nothing},
     html,
-    services::{
-        fetch::{FetchTask, Request, Response},
-        ConsoleService, FetchService,
-    },
-    ComponentLink, Html, ShouldRender,
+    // services::{
+    //     fetch::{FetchTask, Request, Response},
+    //     FetchService,
+    // },
+    Context,
+    Html,
 };
 
 use crate::models::{Crypto, Entry};
@@ -20,27 +22,25 @@ pub struct Properties {
     pub definition: Crypto,
 }
 pub struct Component {
-    properties: Properties,
     data: Option<Vec<Entry>>,
-    link: yew::ComponentLink<Self>,
-    fetch_task: Option<FetchTask>,
+    //fetch_task: Option<FetchTask>,
 }
 
 impl yew::Component for Component {
     type Message = Message;
     type Properties = Properties;
 
-    fn create(properties: Self::Properties, link: ComponentLink<Self>) -> Self {
-        link.send_message(super::message::Message::LoadEntries);
+    fn create(ctx: &Context<Self>) -> Self {
+        ctx.link()
+            .send_message(super::message::Message::LoadEntries);
         Self {
-            properties,
             data: None,
-            link,
-            fetch_task: None,
+            //fetch_task: None,
         }
     }
 
-    fn update(&mut self, msg: Self::Message) -> ShouldRender {
+    fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
+        let properties = ctx.props();
         match msg {
             Message::LoadEntries => {
                 self.data = None;
@@ -49,49 +49,49 @@ impl yew::Component for Component {
                 let url_request = format!(
                     "{:}/definition/{:}",
                     env!("API_URL"),
-                    self.properties.definition.api_key
+                    properties.definition.api_key
                 );
-                ConsoleService::info(&format!(
+                info!(&format!(
                     "{:} -> Loading entries: {:?}",
-                    self.properties.definition.api_key, url_request
+                    properties.definition.api_key, url_request
                 ));
 
-                // create request
-                let req = Request::get(&url_request).body(Nothing).expect(
-                    format!(
-                        "Loading entries data for {:} failed.",
-                        self.properties.definition.api_key
-                    )
-                    .as_str(),
-                );
+                // // create request
+                // let req = Request::get(&url_request).body(Nothing).expect(
+                //     format!(
+                //         "Loading entries data for {:} failed.",
+                //         properties.definition.api_key
+                //     )
+                //     .as_str(),
+                // );
 
-                // callback to handle messaging
-                let cb = self.link.callback(
-                    |response: Response<Json<Result<Vec<Entry>, anyhow::Error>>>| {
-                        let Json(data) = response.into_body();
-                        Message::EntriesLoaded(data)
-                    },
-                );
+                // // callback to handle messaging
+                // let cb = ctx.link().callback(
+                //     |response: Response<Json<Result<Vec<Entry>, anyhow::Error>>>| {
+                //         let Json(data) = response.into_body();
+                //         Message::EntriesLoaded(data)
+                //     },
+                // );
 
-                // set task to avoid out of scope
-                let task = FetchService::fetch(req, cb).expect(&format!(
-                    "{:} -> Entries, Fetch failed: {:?}",
-                    self.properties.definition.api_key, url_request
-                ));
-                self.fetch_task = Some(task);
+                // // set task to avoid out of scope
+                // let task = FetchService::fetch(req, cb).expect(&format!(
+                //     "{:} -> Entries, Fetch failed: {:?}",
+                //     properties.definition.api_key, url_request
+                // ));
+                // self.fetch_task = Some(task);
             }
             Message::EntriesLoaded(resp) => match resp {
                 Ok(data) => {
                     self.data = Some(data);
-                    ConsoleService::info(&format!(
+                    info!(&format!(
                         "{:} -> Loaded entries: {:?}",
-                        self.properties.definition.api_key, self.data
+                        properties.definition.api_key, self.data
                     ));
                 }
                 Err(error) => {
-                    ConsoleService::info(&format!(
+                    info!(&format!(
                         "{:} -> Entries, response error: {:}",
-                        self.properties.definition.api_key, error
+                        properties.definition.api_key, error
                     ));
                 }
             },
@@ -99,8 +99,8 @@ impl yew::Component for Component {
         true
     }
 
-    fn view(&self) -> Html {
-        let crypto_key = &self.properties.definition.api_key;
+    fn view(&self, _ctx: &Context<Self>) -> yew::Html {
+        let crypto_key = &_ctx.props().definition.api_key;
 
         if let Some(data) = &self.data {
             let mut sum_amount: BigDecimal = BigDecimal::zero();
@@ -148,8 +148,8 @@ impl yew::Component for Component {
         }
     }
 
-    fn change(&mut self, _props: Self::Properties) -> ShouldRender {
-        self.link.send_message(Message::LoadEntries);
+    fn changed(&mut self, ctx: &Context<Self>) -> bool {
+        ctx.link().send_message(Message::LoadEntries);
         false
     }
 }

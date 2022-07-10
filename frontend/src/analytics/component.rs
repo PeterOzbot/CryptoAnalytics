@@ -1,116 +1,185 @@
+use chrono::Local;
+use gloo_console::info;
 use std::vec;
 use yew::{
     classes,
-    format::{Json, Nothing},
+    function_component,
+    //format::{Json, Nothing},
     html,
-    services::{
-        fetch::{FetchTask, Request, Response},
-        ConsoleService, FetchService,
-    },
-    ComponentLink, Html, ShouldRender,
+    use_effect,
+    use_effect_with_deps,
+    use_state,
+    Callback,
+    Html,
+    Properties,
 };
+use yew_agent::Bridged;
+use yew_hooks::{use_async, use_async_with_options, use_effect_update, UseAsyncOptions};
 
-use super::message::Message;
+use crate::agents::EventBus;
+use crate::common::*;
 use crate::models::Crypto;
 
 use load_dotenv::load_dotenv;
 load_dotenv!();
 
-pub struct Component {
-    link: ComponentLink<Self>,
-    fetch_task: Option<FetchTask>,
-    crypto_definitions: Option<Vec<Crypto>>,
+const API_ROOT: &str = env!("API_URL");
+
+// !!!!!!!!!!!!!!!! TAKO JE TO !!!!!!!!!!!!!!!!
+//  // url for request
+//  let url_request = format!("{:}{:}", env!("API_URL"), "/definitions");
+//  info!(&format!("Definitions -> Loading data: {:?}", url_request));
+
+//  ctx.link().send_future(async move {
+//      let url_request = format!("https://api.coingecko.com/api/v3/coins/{:}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false","api_key");
+
+//      info!(&format!(
+//          "General component: {:} -> Loading data: {:?}",
+//          "api_key", url_request
+//      ));
+
+//      let response = request_get::<Vec<Crypto>>(url_request).await;
+
+//      Message::DefinitionsLoaded(response)
+//  });
+
+#[derive(Properties, PartialEq)]
+pub struct AnalyticsProperties {
+    pub last_updated: Option<chrono::DateTime<Local>>,
 }
 
-impl yew::Component for Component {
-    type Message = Message;
-    type Properties = ();
+#[function_component(Analytics)]
+pub fn analytics(props: &AnalyticsProperties) -> Html {
+    info!("~Analytics component~");
 
-    fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
-        link.send_message(Message::LoadDefinitions);
-        Self {
-            link,
-            fetch_task: None,
-            crypto_definitions: None,
-        }
-    }
+    let crypto_definitions = use_async(async move {
+        let url = format!("{}{}", API_ROOT, "/definitions");
+        info!(&format!("Analytics component: Loading definitions {}", url));
 
-    fn update(&mut self, msg: Self::Message) -> ShouldRender {
-        match msg {
-            Message::LoadDefinitions => {
-                self.crypto_definitions = None;
+        request_get::<Vec<Crypto>>(url).await
+    });
 
-                // url for request
-                let url_request = format!("{:}/definitions", env!("API_URL"));
-                ConsoleService::info(&format!("Definitions -> Loading data: {:?}", url_request));
+    // let crypto_definitions = use_async_with_options(
+    //     async move {
+    //         let url = format!("{}{}", API_ROOT, "/definitions");
+    //         info!(&format!("Analytics component: Loading definitions {}", url));
 
-                // create request
-                let req = Request::get(&url_request)
-                    .body(Nothing)
-                    .expect("Loading Definitions failed.");
+    //         request_get::<Vec<Crypto>>(url).await
+    //     },
+    //     UseAsyncOptions { auto: true },
+    // );
 
-                // callback to handle messaging
-                let cb = self.link.callback(
-                    |response: Response<Json<Result<Vec<Crypto>, anyhow::Error>>>| {
-                        let Json(data) = response.into_body();
-                        Message::DefinitionsLoaded(data)
-                    },
-                );
+    //crypto_definitions.run();
 
-                // set task to avoid out of scope
-                let task = FetchService::fetch(req, cb)
-                    .expect(&format!("Definitions -> Fetch failed: {:?}", url_request));
-                self.fetch_task = Some(task);
-            }
-            Message::DefinitionsLoaded(resp) => match resp {
-                Ok(data) => {
-                    self.crypto_definitions = Some(data);
-                    ConsoleService::info(&format!(
-                        "Definitions -> Loaded data: {:?}",
-                        self.crypto_definitions
-                    ));
+    // let interval = {
+    //     let crypto_definitions = crypto_definitions.clone();
+    //     Callback::from(move |_| {
+    //         //let crypto_definitions = crypto_definitions.clone();
+    //         crypto_definitions.run();
+    //     })
+    // };
+
+    // use_effect(move || {
+    //     let producer = EventBus::bridge(interval);
+
+    //     || drop(producer)
+    // });
+
+    let crypto_html: Vec<Html>;
+
+    if let Some(crypto_definitions) = &crypto_definitions.data {
+        crypto_html = crypto_definitions
+            .iter()
+            .map(|crypto_definition| {
+                html! {
+                   <super::general::General definition={crypto_definition.clone()}/>
                 }
-                Err(error) => {
-                    ConsoleService::info(&format!(
-                        "Definitions -> Message response error: {:}",
-                        error
-                    ));
-                }
-            },
-        }
-        true
-    }
-
-    fn view(&self) -> Html {
-        let crypto_html: Vec<Html>;
-        if let Some(crypto_definitions) = &self.crypto_definitions {
-            crypto_html = crypto_definitions
-                .iter()
-                .map(|crypto_definition| {
-                    html! {
-                       <super::general::Component definition=crypto_definition.clone()/>
-                    }
-                })
-                .collect();
-        } else {
-            crypto_html = vec![html! {
-                <div class=classes!("loading-container")>
-                    <div class="stage">
-                        <div class="dot-carousel"></div>
-                    </div>
+            })
+            .collect();
+    } else {
+        crypto_html = vec![html! {
+            <div class={classes!("loading-container")}>
+                <div class="stage">
+                    <div class="dot-carousel"></div>
                 </div>
-            }];
-        }
-
-        html! {
-            <div class=classes!("analytics-container")>
-                {crypto_html}
             </div>
-        }
+        }];
     }
 
-    fn change(&mut self, _props: Self::Properties) -> ShouldRender {
-        self.link.send_message(Message::LoadDefinitions);
-        false
+    if let Some(errors) = &crypto_definitions.error {
+        info!(&format!(
+            "Analytics component: Loading definitions error: {}",
+            errors
+        ));
+    }
+
+    html! {
+        <div class={classes!("analytics-container")}>
+            {crypto_html}
+        </div>
     }
 }
+
+//let agent = EventBus::bridge(interval);
+
+//{
+// let crypto_definitions = crypto_definitions.clone();
+// use_effect_with_deps(
+//     move |_| {
+//         crypto_definitions.run();
+//         || ()
+//     },
+//     props.last_updated.clone(),
+// );
+
+//let counter = counter.clone();
+// use_effect(move || {
+//     // Make a call to DOM API after component is rendered
+//     gloo_utils::document().set_title(&format!("You clicked {} times", *counter));
+
+//     // Perform the cleanup
+//     || gloo_utils::document().set_title("You clicked 0 times")
+// });
+//}
+// let onclick = {
+//     info!("~Analytics component~ OnClick");
+//     let counter = counter.clone();
+//     Callback::from(move |_| {
+//         info!("~Analytics component~ OnClick counter");
+//         counter.set(*counter + 1);
+//     })
+// };
+
+// html! {
+//     <button>{ format!("Increment to {}", *counter) }</button>
+// }
+
+// let current_page = use_state(|| None::<chrono::DateTime<Local>>);
+
+// let crypto_definitions =
+//     use_async(async move { request_get::<Vec<Crypto>>(String::from("/definitions")).await });
+
+// {
+//     let current_page = current_page.clone();
+//     use_effect(move || {
+//         // Reset to first page
+//         current_page.set(None::<chrono::DateTime<Local>>);
+//         || ()
+//     });
+// }
+
+// {
+//     let crypto_definitions = crypto_definitions.clone();
+//     use_effect(move || {
+//         crypto_definitions.run();
+//         || ()
+//     });
+// }
+
+// let callback = {
+//     let current_page = current_page.clone();
+
+//     Callback::from(move |_| {
+//         current_page.set(Some(chrono::offset::Local::now()));
+//     })
+// };

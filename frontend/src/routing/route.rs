@@ -1,10 +1,9 @@
-use yew_router::Switch;
+use yew_router::prelude::*;
 
-//#[derive(Switch)]
-#[derive(Switch, Clone, Debug)]
+#[derive(Clone, Routable, PartialEq)]
 pub enum ApplicationRoutes {
-    #[to = "/portfolio"]
-    Portfolio,
-    #[to = "/"]
+    #[at("/")]
     Home,
+    #[at("/portfolio")]
+    Portfolio,
 }

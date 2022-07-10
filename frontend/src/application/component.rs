@@ -1,13 +1,14 @@
-use std::time::Duration;
-
 use chrono::Local;
-use yew::{
-    html,
-    services::{timeout::TimeoutTask, ConsoleService, TimeoutService},
-    ComponentLink, Html, ShouldRender,
-};
-use yew_router::router::Router;
+use gloo_console::info;
+use gloo_timers::callback::Timeout;
 
+use yew::prelude::*;
+use yew_agent::{Bridge, Bridged};
+use yew_agent::{Dispatched, Dispatcher};
+use yew_router::prelude::*;
+
+use crate::agents::EventBus;
+use crate::agents::Request;
 use crate::analytics;
 use crate::portfolio;
 use crate::routing::ApplicationRoutes;
@@ -15,77 +16,84 @@ use crate::routing::ApplicationRoutes;
 use super::message::Message;
 
 pub struct Component {
-    link: ComponentLink<Self>,
     last_updated: Option<chrono::DateTime<Local>>,
-    refresh_task: Option<TimeoutTask>,
+    //_producer: Box<dyn Bridge<EventBus>>,
+    event_bus: Dispatcher<EventBus>,
 }
 
 impl yew::Component for Component {
     type Message = Message;
     type Properties = ();
 
-    fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
-        link.send_message(Message::Refresh);
+    fn create(ctx: &Context<Self>) -> Self {
+        ctx.link().send_message(Message::Refresh);
 
         Self {
-            link,
-            refresh_task: None,
             last_updated: None,
+            //_producer: EventBus::bridge(ctx.link().callback(Message::Refresh)),
+            event_bus: EventBus::dispatcher(),
         }
     }
 
-    fn update(&mut self, msg: Self::Message) -> ShouldRender {
+    fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
             Message::Refresh => {
                 // set update time
                 self.last_updated = Some(chrono::offset::Local::now());
 
-                // set recurring calls
-                self.refresh_task = Some(TimeoutService::spawn(
-                    Duration::from_secs(300),
-                    self.link.callback(|_| Message::Refresh),
-                ));
+                // set timer update
+                let callback = ctx.link().callback(|_| Message::Refresh);
+                //let timeout = Timeout::new(300_000, move || callback.emit(()));
+                let timeout = Timeout::new(5000, move || callback.emit(()));
+
+                // Since we don't plan on cancelling the timeout, call `forget`.
+                timeout.forget();
+
+                self.event_bus.send(Request::EventBusMsg);
             }
         }
         true
     }
 
-    fn change(&mut self, _props: Self::Properties) -> ShouldRender {
+    fn changed(&mut self, _ctx: &Context<Self>) -> bool {
         false
     }
 
-    fn view(&self) -> Html {
-        let last_updated = match &self.last_updated {
+    fn view(&self, _ctx: &Context<Self>) -> yew::Html {
+        let last_updated = self.last_updated.clone();
+        let formatted_last_updated = match &last_updated {
             Some(date) => date.format("%d.%m ~ %H:%M").to_string(),
             None => String::from("/ ~ /"),
         };
-        ConsoleService::info(&format!("Refresh: {:}", last_updated));
+        info!(&format!("Refresh: {:}", formatted_last_updated.clone()));
 
-        html! {
+        let html = html! {
            <div class="main-container">
                <div class="page-header">
-                   <div class="updated">{"Updated at: "}{last_updated}</div>
+                   <div class="updated">{"Updated at: "}{formatted_last_updated}</div>
                </div>
 
                <div class="page-content">
-                   <Router<ApplicationRoutes, ()>
-                       render = Router::render(|switch: ApplicationRoutes| {
-                           match switch {
-                               ApplicationRoutes::Home => {
-                                   html! {
-                                       <analytics::Component />
-                                   }
-                               }
-                               ApplicationRoutes::Portfolio => {
-                                   html! {
-                                       <portfolio::Component/>
-                                   }
-                               }
-                           }
-                       })
-                   />
+                <BrowserRouter>
+                    <Switch<ApplicationRoutes> render={Switch::render(move |routes| {
+                        match routes {
+                            ApplicationRoutes::Home => {
+                                html! {
+                                    <analytics::Analytics last_updated={last_updated}/>
+                                }
+                            }
+                            ApplicationRoutes::Portfolio => {
+                                html! {
+                                    <portfolio::Component/>
+                                }
+                            }
+                        }
+                    })}/>
+                </BrowserRouter>
                 </div>
             </div>
-        }
+        };
+
+        html
     }
 }

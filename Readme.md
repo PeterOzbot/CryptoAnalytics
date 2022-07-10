@@ -24,7 +24,14 @@ cargo watch -c -w src -x run
 Host name and port defined in .env.
 
 # State management
-TODO: https://github.com/intendednull/yewdux
+First upgrade to 0.19:
+    - Function components
+
+TODO: 
+- https://github.com/intendednull/yewdux
+// api calls
+- https://github.com/jetli/rust-yew-realworld-example-app
+
 
 # Docker
 

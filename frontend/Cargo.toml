@@ -9,14 +9,22 @@ crate-type = ["cdylib"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-yew = "0.18"
+yew = "0.19.3"
+yew-router = "0.16.0"
+yew-hooks = "0.1.56"
+yew-agent = "0.1.0"
 wasm-bindgen = "0.2.67"
 serde = "1"
 serde_derive = "1"
 serde_json = "1"
 bigdecimal = { version = "0.2", features = ["serde"] }
 anyhow = "1"
-yew-router = "0.15.0"
 chrono = { version = "0.4", features = ["wasmbind"] }
 thousands = "0.2.0"
 load-dotenv = "0.1.2"
+gloo-console = "0.2.1"
+gloo-timers = "0.2.4"
+reqwest = { version = "0.11", features = ["blocking","json"] }
+thiserror = "1"
+
+gloo-utils = "0.1.2"

@@ -10,6 +10,7 @@
         "dotenv",
         "litecoin",
         "peterozbot",
+        "Routable",
         "sqlx"
     ]
 }
