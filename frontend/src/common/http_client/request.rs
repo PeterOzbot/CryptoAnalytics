@@ -1,4 +1,3 @@
-use gloo_console::info;
 use serde::{de::DeserializeOwned, Serialize};
 
 use super::error::Error;

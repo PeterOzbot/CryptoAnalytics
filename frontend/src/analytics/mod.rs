@@ -3,4 +3,4 @@ mod general;
 mod history;
 mod message;
 
-pub use component::Analytics;
+pub use component::Component;

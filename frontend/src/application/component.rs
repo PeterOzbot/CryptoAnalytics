@@ -3,12 +3,8 @@ use gloo_console::info;
 use gloo_timers::callback::Timeout;
 
 use yew::prelude::*;
-use yew_agent::{Bridge, Bridged};
-use yew_agent::{Dispatched, Dispatcher};
 use yew_router::prelude::*;
 
-use crate::agents::EventBus;
-use crate::agents::Request;
 use crate::analytics;
 use crate::portfolio;
 use crate::routing::ApplicationRoutes;
@@ -17,8 +13,6 @@ use super::message::Message;
 
 pub struct Component {
     last_updated: Option<chrono::DateTime<Local>>,
-    //_producer: Box<dyn Bridge<EventBus>>,
-    event_bus: Dispatcher<EventBus>,
 }
 
 impl yew::Component for Component {
@@ -28,11 +22,7 @@ impl yew::Component for Component {
     fn create(ctx: &Context<Self>) -> Self {
         ctx.link().send_message(Message::Refresh);
 
-        Self {
-            last_updated: None,
-            //_producer: EventBus::bridge(ctx.link().callback(Message::Refresh)),
-            event_bus: EventBus::dispatcher(),
-        }
+        Self { last_updated: None }
     }
 
     fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
@@ -43,13 +33,11 @@ impl yew::Component for Component {
 
                 // set timer update
                 let callback = ctx.link().callback(|_| Message::Refresh);
-                //let timeout = Timeout::new(300_000, move || callback.emit(()));
-                let timeout = Timeout::new(5000, move || callback.emit(()));
+                let timeout = Timeout::new(300_000, move || callback.emit(()));
+                //let timeout = Timeout::new(5000, move || callback.emit(()));
 
                 // Since we don't plan on cancelling the timeout, call `forget`.
                 timeout.forget();
-
-                self.event_bus.send(Request::EventBusMsg);
             }
         }
         true
@@ -79,7 +67,7 @@ impl yew::Component for Component {
                         match routes {
                             ApplicationRoutes::Home => {
                                 html! {
-                                    <analytics::Analytics last_updated={last_updated}/>
+                                    <analytics::Component last_updated={last_updated}/>
                                 }
                             }
                             ApplicationRoutes::Portfolio => {

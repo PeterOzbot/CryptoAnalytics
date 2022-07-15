@@ -1,6 +1,6 @@
-use crate::models::Entry;
+use crate::{common::Error, models::Entry};
 
 pub enum Message {
     LoadEntries,
-    EntriesLoaded(Result<Vec<Entry>, anyhow::Error>),
+    EntriesLoaded(Result<Vec<Entry>, Error>),
 }

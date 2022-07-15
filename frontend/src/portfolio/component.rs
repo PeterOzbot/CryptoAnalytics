@@ -1,15 +1,5 @@
 use gloo_console::info;
-use yew::{
-    classes,
-    //format::{Json, Nothing},
-    html,
-    // services::{
-    //     fetch::{FetchTask, Request, Response},
-    //     FetchService,
-    // },
-    Context,
-    Html,
-};
+use yew::{classes, html, Context, Html};
 
 use crate::{common::request_get, models::Crypto};
 
@@ -19,7 +9,6 @@ use load_dotenv::load_dotenv;
 load_dotenv!();
 
 pub struct Component {
-    //fetch_task: Option<FetchTask>,
     crypto_definitions: Option<Vec<Crypto>>,
 }
 
@@ -40,35 +29,30 @@ impl yew::Component for Component {
             Message::LoadDefinitions => {
                 self.crypto_definitions = None;
 
-                // // create request
-                // let req = Request::get(&url_request)
-                //     .body(Nothing)
-                //     .expect("Loading Definitions failed.");
+                ctx.link().send_future(async move {
+                    // url for request
+                    let url_request = format!("{:}/definitions", env!("API_URL"));
+                    info!(&format!(
+                        "Portfolio component: Loading data: {:?}",
+                        url_request
+                    ));
 
-                // // callback to handle messaging
-                // let cb = ctx.link().callback(
-                //     |response: Response<Json<Result<Vec<Crypto>, anyhow::Error>>>| {
-                //         let Json(data) = response.into_body();
-                //         Message::DefinitionsLoaded(data)
-                //     },
-                // );
+                    let response = request_get::<Vec<Crypto>>(url_request).await;
 
-                // // set task to avoid out of scope
-                // let task = FetchService::fetch(req, cb)
-                //     .expect(&format!("Definitions -> Fetch failed: {:?}", url_request));
-                // self.fetch_task = Some(task);
+                    Message::DefinitionsLoaded(response)
+                });
             }
             Message::DefinitionsLoaded(resp) => match resp {
                 Ok(data) => {
                     self.crypto_definitions = Some(data);
                     info!(&format!(
-                        "Definitions -> Loaded data: {:?}",
+                        "Portfolio component: Definitions -> Loaded data: {:?}",
                         self.crypto_definitions
                     ));
                 }
                 Err(error) => {
                     info!(&format!(
-                        "Definitions -> Message response error: {:}",
+                        "Portfolio component: Definitions -> Message response error: {:}",
                         error
                     ));
                 }

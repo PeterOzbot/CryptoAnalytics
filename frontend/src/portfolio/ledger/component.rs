@@ -2,18 +2,12 @@ use std::ops::{Add, Mul, Sub};
 
 use bigdecimal::{BigDecimal, Zero};
 use gloo_console::info;
-use yew::{
-    //format::{Json, Nothing},
-    html,
-    // services::{
-    //     fetch::{FetchTask, Request, Response},
-    //     FetchService,
-    // },
-    Context,
-    Html,
-};
+use yew::{html, Context, Html};
 
-use crate::models::{Crypto, Entry};
+use crate::{
+    common::request_get,
+    models::{Crypto, Entry},
+};
 
 use super::message::Message;
 
@@ -23,7 +17,6 @@ pub struct Properties {
 }
 pub struct Component {
     data: Option<Vec<Entry>>,
-    //fetch_task: Option<FetchTask>,
 }
 
 impl yew::Component for Component {
@@ -40,57 +33,39 @@ impl yew::Component for Component {
     }
 
     fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
-        let properties = ctx.props();
+        let properties = ctx.props().clone();
         match msg {
             Message::LoadEntries => {
                 self.data = None;
 
-                // url for request
-                let url_request = format!(
-                    "{:}/definition/{:}",
-                    env!("API_URL"),
-                    properties.definition.api_key
-                );
-                info!(&format!(
-                    "{:} -> Loading entries: {:?}",
-                    properties.definition.api_key, url_request
-                ));
+                ctx.link().send_future(async move {
+                    // url for request
+                    let url_request = format!(
+                        "{:}/definition/{:}",
+                        env!("API_URL"),
+                        properties.definition.api_key
+                    );
+                    info!(&format!(
+                        "Ledger component: {:} -> Loading entries: {:?}",
+                        properties.definition.api_key, url_request
+                    ));
 
-                // // create request
-                // let req = Request::get(&url_request).body(Nothing).expect(
-                //     format!(
-                //         "Loading entries data for {:} failed.",
-                //         properties.definition.api_key
-                //     )
-                //     .as_str(),
-                // );
+                    let response = request_get::<Vec<Entry>>(url_request).await;
 
-                // // callback to handle messaging
-                // let cb = ctx.link().callback(
-                //     |response: Response<Json<Result<Vec<Entry>, anyhow::Error>>>| {
-                //         let Json(data) = response.into_body();
-                //         Message::EntriesLoaded(data)
-                //     },
-                // );
-
-                // // set task to avoid out of scope
-                // let task = FetchService::fetch(req, cb).expect(&format!(
-                //     "{:} -> Entries, Fetch failed: {:?}",
-                //     properties.definition.api_key, url_request
-                // ));
-                // self.fetch_task = Some(task);
+                    Message::EntriesLoaded(response)
+                });
             }
             Message::EntriesLoaded(resp) => match resp {
                 Ok(data) => {
                     self.data = Some(data);
                     info!(&format!(
-                        "{:} -> Loaded entries: {:?}",
+                        "Ledger component: {:} -> Loaded entries: {:?}",
                         properties.definition.api_key, self.data
                     ));
                 }
                 Err(error) => {
                     info!(&format!(
-                        "{:} -> Entries, response error: {:}",
+                        "Ledger component: {:} -> Entries, response error: {:}",
                         properties.definition.api_key, error
                     ));
                 }

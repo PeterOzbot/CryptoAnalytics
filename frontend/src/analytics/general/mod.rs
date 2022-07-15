@@ -1,4 +1,4 @@
 mod component;
 mod message;
 
-pub use component::General;
+pub use component::Component;

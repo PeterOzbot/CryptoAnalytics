@@ -8,8 +8,10 @@
         "chrono",
         "defichain",
         "dotenv",
+        "gloo",
         "litecoin",
         "peterozbot",
+        "reqwest",
         "Routable",
         "sqlx"
     ]
