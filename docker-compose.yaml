@@ -36,6 +36,7 @@ services:
       dockerfile: frontend.Dockerfile
       args:
         - API_URL=http://localhost:1020
+        - RELOAD_INTERVAL= 300000
     ports:
       - "1030:80"
     depends_on:

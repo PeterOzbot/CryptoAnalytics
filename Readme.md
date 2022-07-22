@@ -16,6 +16,14 @@ Run frontend:
 trunk serve
 ```
 Configuration in Trunk.toml.
+
+### State management
+https://github.com/intendednull/yewdux
+
+### Example Apps
+https://github.com/jetli/rust-yew-realworld-example-app
+
+
 ## Backend
 Run and watch for changes:
 ```
@@ -23,19 +31,9 @@ cargo watch -c -w src -x run
 ```
 Host name and port defined in .env.
 
-# State management
-First upgrade to 0.19:
-    - Function components
-
-TODO: 
-- https://github.com/intendednull/yewdux
-// api calls
-- https://github.com/jetli/rust-yew-realworld-example-app
-
-
 # Docker
 
-*Log into contaier with sh*
+*Log into container with sh*
 ```
 sudo docker exec -it crypto-analytics-frontend /bin/sh
 ```

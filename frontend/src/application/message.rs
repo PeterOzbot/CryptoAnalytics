@@ -1,3 +1,7 @@
+use std::rc::Rc;
+
+use crate::store::CryptoState;
+
 pub enum Message {
-    Refresh,
+    State(Rc<CryptoState>),
 }

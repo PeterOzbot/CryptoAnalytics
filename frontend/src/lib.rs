@@ -8,6 +8,7 @@ mod common;
 mod models;
 mod portfolio;
 mod routing;
+mod store;
 
 use wasm_bindgen::prelude::wasm_bindgen;
 

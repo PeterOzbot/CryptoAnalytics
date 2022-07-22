@@ -26,10 +26,7 @@ impl yew::Component for Component {
     fn create(ctx: &Context<Self>) -> Self {
         ctx.link()
             .send_message(super::message::Message::LoadEntries);
-        Self {
-            data: None,
-            //fetch_task: None,
-        }
+        Self { data: None }
     }
 
     fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {

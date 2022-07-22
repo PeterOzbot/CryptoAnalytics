@@ -1,9 +1,12 @@
-use gloo_console::info;
+use std::rc::Rc;
+
 use yew::{classes, Context};
+use yewdux::prelude::Dispatch;
 
 use crate::{
-    common::{request_get, FormattedPrice},
-    models::{Crypto, PricesData},
+    common::FormattedPrice,
+    models::Crypto,
+    store::{CryptoState, CryptoStore},
 };
 
 use super::message::Message;
@@ -14,7 +17,8 @@ pub struct Properties {
 }
 
 pub struct Component {
-    data: Option<PricesData>,
+    _dispatch: Dispatch<CryptoStore>,
+    state: Option<Rc<CryptoState>>,
 }
 
 impl yew::Component for Component {
@@ -22,98 +26,82 @@ impl yew::Component for Component {
     type Message = super::message::Message;
 
     fn create(ctx: &Context<Self>) -> Self {
-        ctx.link().send_message(super::message::Message::LoadPrices);
-        Self { data: None }
+        let dispatch = Dispatch::bridge_state(ctx.link().callback(Message::State));
+
+        Self {
+            _dispatch: dispatch,
+            state: None,
+        }
     }
 
     fn view(&self, _ctx: &Context<Self>) -> yew::Html {
         let properties = _ctx.props();
-        if let Some(data) = &self.data {
-            let formatted_price =
-                FormattedPrice::format_data(data, properties.definition.precision);
-
-            // construct HTML
-            yew::html! {
-                <div class="general-row">
-                    <div class="general-info">
-                        <img alt={properties.definition.api_key.clone()} src={data.image.thumb.clone()}/>
-                        <div class="general-price">
-                            <div class={classes!(&formatted_price.change_direction, "price")}>{formatted_price.value}</div>
-                            <div class={classes!(&formatted_price.change_direction, "change")}>{formatted_price.change}</div>
-                        </div>
-                    </div>
-
-                    <crate::analytics::history::Component label="24h" price_change={data.market_data.price_change_percentage_24h_in_currency.clone()} current_price={data.market_data.current_price.clone()} definition={properties.definition.clone()} use_absolute=true />
-
-                    <crate::analytics::history::Component label="7d" price_change={data.market_data.price_change_percentage_7d_in_currency.clone()} current_price={data.market_data.current_price.clone()} definition={properties.definition.clone()} use_absolute=false/>
-
-                    <crate::analytics::history::Component label="30d" price_change={data.market_data.price_change_percentage_30d_in_currency.clone()} current_price={data.market_data.current_price.clone()} definition={properties.definition.clone()} use_absolute=false/>
-
-                    <crate::analytics::history::Component label="200d" price_change={data.market_data.price_change_percentage_200d_in_currency.clone()}current_price={data.market_data.current_price.clone()} definition={properties.definition.clone()} use_absolute=false/>
-
-                    <crate::analytics::history::Component label="1y" price_change={data.market_data.price_change_percentage_1y_in_currency.clone()} current_price={data.market_data.current_price.clone()} definition={properties.definition.clone()} use_absolute=false/>
-
-                    <div class="legend">
-                        <div>{"EUR"}</div>
-                        <div>{"BTC"}</div>
-                        <div>{"ETH"}</div>
-                    </div>
-                </div>
-            }
-        } else {
-            // loading indicator
-            yew::html! {
-                <div class="general-row">
-                <div class="loading-info">
-                    <div class="stage">
-                        <div class="dot-carousel"></div>
-                    </div>
+        let mut html = yew::html! {
+            <div class="general-row">
+            <div class="loading-info">
+                <div class="stage">
+                    <div class="dot-carousel"></div>
                 </div>
             </div>
+        </div>
+        };
+
+        if let Some(state) = &self.state {
+            if state
+                .crypto_prices
+                .contains_key(&properties.definition.api_key)
+            {
+                let prices_data = state.crypto_prices.get(&properties.definition.api_key);
+                if let Some(data) = prices_data {
+                    let formatted_price =
+                        FormattedPrice::format_data(data, properties.definition.precision);
+
+                    // construct HTML
+                    html = yew::html! {
+                        <div class="general-row">
+                            <div class="general-info">
+                                <img alt={properties.definition.api_key.clone()} src={data.image.thumb.clone()}/>
+                                <div class="general-price">
+                                    <div class={classes!(&formatted_price.change_direction, "price")}>{formatted_price.value}</div>
+                                    <div class={classes!(&formatted_price.change_direction, "change")}>{formatted_price.change}</div>
+                                </div>
+                            </div>
+
+                            <crate::analytics::history::Component label="Now" price_change={data.market_data.price_change_percentage_24h_in_currency.clone()} current_price={data.market_data.current_price.clone()} definition={properties.definition.clone()} use_absolute=true />
+
+                            <crate::analytics::history::Component label="24h" price_change={data.market_data.price_change_percentage_24h_in_currency.clone()} current_price={data.market_data.current_price.clone()} definition={properties.definition.clone()} use_absolute=false />
+
+                            <crate::analytics::history::Component label="7d" price_change={data.market_data.price_change_percentage_7d_in_currency.clone()} current_price={data.market_data.current_price.clone()} definition={properties.definition.clone()} use_absolute=false/>
+
+                            <crate::analytics::history::Component label="30d" price_change={data.market_data.price_change_percentage_30d_in_currency.clone()} current_price={data.market_data.current_price.clone()} definition={properties.definition.clone()} use_absolute=false/>
+
+                            <crate::analytics::history::Component label="200d" price_change={data.market_data.price_change_percentage_200d_in_currency.clone()}current_price={data.market_data.current_price.clone()} definition={properties.definition.clone()} use_absolute=false/>
+
+                            <crate::analytics::history::Component label="1y" price_change={data.market_data.price_change_percentage_1y_in_currency.clone()} current_price={data.market_data.current_price.clone()} definition={properties.definition.clone()} use_absolute=false/>
+
+                            <div class="legend">
+                                <div>{"EUR"}</div>
+                                <div>{"BTC"}</div>
+                                <div>{"ETH"}</div>
+                            </div>
+                        </div>
+                    }
+                }
             }
         }
+        html
     }
 
-    fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
-        let properties = ctx.props().clone();
+    fn update(&mut self, _: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
-            Message::LoadPrices => {
-                self.data = None;
-
-                ctx.link().send_future(async move {
-                // url for request
-                let url_request = format!("https://api.coingecko.com/api/v3/coins/{:}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false",properties.definition.api_key);
-                info!(&format!(
-                    "General component: {:} -> Loading data: {:?}",
-                    properties.definition.api_key, url_request
-                ));
-
-                let response = request_get::<PricesData>(url_request).await;
-
-                Message::PricesLoaded(response)
-                });
+            Message::State(state) => {
+                self.state = Some(state);
             }
-            Message::PricesLoaded(resp) => match resp {
-                Ok(data) => {
-                    self.data = Some(data);
-                    info!(&format!(
-                        "General component: {:} -> Loaded data: {:?}",
-                        properties.definition.api_key, self.data
-                    ));
-                }
-                Err(error) => {
-                    info!(&format!(
-                        "General component: {:} -> Response error: {:}",
-                        properties.definition.api_key, error
-                    ));
-                }
-            },
         }
         true
     }
 
-    fn changed(&mut self, ctx: &Context<Self>) -> bool {
-        ctx.link().send_message(super::message::Message::LoadPrices);
+    fn changed(&mut self, _: &Context<Self>) -> bool {
         false
     }
 }

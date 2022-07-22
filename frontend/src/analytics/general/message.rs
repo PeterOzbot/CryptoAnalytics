@@ -1,6 +1,7 @@
-use crate::{common::Error, models::PricesData};
+use std::rc::Rc;
+
+use crate::store::CryptoState;
 
 pub enum Message {
-    LoadPrices,
-    PricesLoaded(Result<PricesData, Error>),
+    State(Rc<CryptoState>),
 }

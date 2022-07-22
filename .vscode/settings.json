@@ -11,8 +11,10 @@
         "gloo",
         "litecoin",
         "peterozbot",
+        "psql",
         "reqwest",
         "Routable",
-        "sqlx"
+        "sqlx",
+        "yewdux"
     ]
 }

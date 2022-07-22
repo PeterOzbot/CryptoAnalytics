@@ -1,4 +1,6 @@
-mod interval_agent;
+mod agent_request;
+mod load_agent;
+mod message;
 
-pub use interval_agent::EventBus;
-pub use interval_agent::Request;
+pub use agent_request::AgentRequest;
+pub use load_agent::LoadAgent;
