@@ -1,6 +1,7 @@
-use crate::{common::Error, models::Entry};
+use std::rc::Rc;
+
+use crate::store::CryptoState;
 
 pub enum Message {
-    LoadEntries,
-    EntriesLoaded(Result<Vec<Entry>, Error>),
+    State(Rc<CryptoState>),
 }

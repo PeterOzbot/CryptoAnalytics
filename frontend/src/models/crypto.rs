@@ -1,6 +1,6 @@
 use std::fmt::{Display, Formatter, Result};
 
-#[derive(Clone, PartialEq, Debug, Deserialize)]
+#[derive(Clone, PartialEq, Debug, Deserialize, Serialize)]
 pub struct Crypto {
     pub api_key: String,
     pub precision: i16,

@@ -5,7 +5,7 @@ use yewdux::prelude::{Dispatch, Dispatcher};
 
 use crate::{
     common::request_get,
-    models::{Crypto, PricesData},
+    models::{Crypto, Entry, PricesData},
     store::{CryptoState, CryptoStore},
 };
 
@@ -60,17 +60,20 @@ impl Agent for LoadAgent {
             }
             Message::DefinitionsLoaded(resp) => match resp {
                 Ok(data) => {
+                    // notify about definitions
+                    info!(&format!(
+                        "Load Agent: Definitions -> Loaded data: {:?}",
+                        data
+                    ));
+
                     // load prices for each definition
                     load_prices(&data, &self.link);
 
-                    // notify about definitions
-                    let crypto_definitions = Some(data);
-                    info!(&format!(
-                        "Load Agent: Definitions -> Loaded data: {:?}",
-                        crypto_definitions
-                    ));
+                    // load portfolio entries for each definition
+                    load_portfolio_entries(&data, &self.link);
 
                     // update state
+                    let crypto_definitions = Some(data);
                     self.dispatch.reduce(|state: &mut CryptoState| {
                         state.crypto_definitions = crypto_definitions;
                     });
@@ -94,6 +97,26 @@ impl Agent for LoadAgent {
                 Err(error) => {
                     info!(&format!(
                         "Load Agent: {:} -> Response error: {:}",
+                        id, error
+                    ));
+                }
+            },
+            Message::PortfolioLoaded(id, resp) => match resp {
+                Ok(data) => {
+                    info!(&format!(
+                        "Load Agent: {:} -> Loaded entries: {:?}",
+                        &id, &data
+                    ));
+
+                    // update state
+                    self.dispatch.reduce(|state: &mut CryptoState| {
+                        state.portfolio.remove(&id);
+                        state.portfolio.insert(id, data);
+                    });
+                }
+                Err(error) => {
+                    info!(&format!(
+                        "Load Agent: {:} -> Entries, Response error: {:}",
                         id, error
                     ));
                 }
@@ -127,6 +150,30 @@ impl Agent for LoadAgent {
     fn connected(&mut self, _: HandlerId) {}
 
     fn disconnected(&mut self, _: HandlerId) {}
+}
+
+fn load_portfolio_entries(data: &Vec<Crypto>, link: &AgentLink<LoadAgent>) {
+    for definition in data {
+        let api_key = definition.api_key.clone();
+        load_entries(api_key, link);
+    }
+}
+
+fn load_entries(api_key: String, link: &AgentLink<LoadAgent>) {
+    link.send_future(async move {
+        //url for request
+        let url_request = format!("{:}/definition/{:}", env!("API_URL"), &api_key);
+        info!(&format!(
+            "Load Agent: {:} -> Loading entries: {:?}",
+            &api_key, url_request
+        ));
+
+        // get request
+        let response = request_get::<Vec<Entry>>(url_request).await;
+
+        // send response
+        Message::PortfolioLoaded(api_key, response)
+    });
 }
 
 fn load_prices(data: &Vec<Crypto>, link: &AgentLink<LoadAgent>) {

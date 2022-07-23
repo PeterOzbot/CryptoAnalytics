@@ -1,6 +1,7 @@
-use crate::{common::Error, models::Crypto};
+use std::rc::Rc;
+
+use crate::store::CryptoState;
 
 pub enum Message {
-    LoadDefinitions,
-    DefinitionsLoaded(Result<Vec<Crypto>, Error>),
+    State(Rc<CryptoState>),
 }
