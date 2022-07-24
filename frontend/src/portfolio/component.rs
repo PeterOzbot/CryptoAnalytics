@@ -1,4 +1,5 @@
-use std::rc::Rc;
+use bigdecimal::{BigDecimal, Zero};
+use std::{ops::Add, rc::Rc};
 use yew::{classes, html, Context, Html};
 use yewdux::prelude::Dispatch;
 
@@ -37,30 +38,51 @@ impl yew::Component for Component {
     }
 
     fn view(&self, _ctx: &Context<Self>) -> yew::Html {
-        let mut crypto_html: Vec<Html> = vec![html! {
+        let mut content_html: Html = html! {
             <div class={classes!("loading-container")}>
                 <div class="stage">
                     <div class="dot-carousel"></div>
                 </div>
             </div>
-        }];
+        };
 
         if let Some(state) = &self.state {
             if let Some(crypto_definitions) = &state.crypto_definitions {
-                crypto_html = crypto_definitions
+                let mut buy_price_sum: BigDecimal = BigDecimal::zero();
+                let mut current_price_sum: BigDecimal = BigDecimal::zero();
+
+                for portfolio_entry in state.portfolio.values() {
+                    buy_price_sum = buy_price_sum.add(&portfolio_entry.buy_price_sum);
+                    current_price_sum = current_price_sum.add(&portfolio_entry.current_price_sum);
+                }
+
+                let portfolio_entries_html: Vec<Html> = crypto_definitions
                     .iter()
                     .map(|crypto_definition| {
                         html! {
-                           <super::ledger::Component definition={crypto_definition.clone()}/>
+                        <super::ledger::Component definition={crypto_definition.clone()}/>
                         }
                     })
                     .collect();
+
+                content_html = html! {
+                    <div>
+                        <div class={classes!("sum-container")}>
+                            <div>{"Bought: "}{buy_price_sum}</div>
+                            <div>{"Worth: "}{current_price_sum}</div>
+                        </div>
+
+                        <div class={classes!("entries-container")}>
+                            {portfolio_entries_html}
+                        </div>
+                    </div>
+                };
             }
         }
 
         html! {
-            <div class={classes!("portfolio-container")}>
-                {crypto_html}
+            <div>
+                {content_html}
             </div>
         }
     }

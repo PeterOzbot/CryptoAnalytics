@@ -5,7 +5,7 @@ use yewdux::prelude::{Dispatch, Dispatcher};
 
 use crate::{
     common::request_get,
-    models::{Crypto, Entry, PricesData},
+    models::{Crypto, Portfolio, PricesData},
     store::{CryptoState, CryptoStore},
 };
 
@@ -69,9 +69,6 @@ impl Agent for LoadAgent {
                     // load prices for each definition
                     load_prices(&data, &self.link);
 
-                    // load portfolio entries for each definition
-                    load_portfolio_entries(&data, &self.link);
-
                     // update state
                     let crypto_definitions = Some(data);
                     self.dispatch.reduce(|state: &mut CryptoState| {
@@ -88,6 +85,9 @@ impl Agent for LoadAgent {
             Message::PricesLoaded(id, resp) => match resp {
                 Ok(data) => {
                     info!(&format!("Load Agent: {:} -> Loaded data: {:?}", &id, &data));
+
+                    // load portfolio with price data
+                    load_portfolio(id.clone(), &data, &self.link);
 
                     self.dispatch.reduce(|state: &mut CryptoState| {
                         state.crypto_prices.remove(&id);
@@ -152,24 +152,24 @@ impl Agent for LoadAgent {
     fn disconnected(&mut self, _: HandlerId) {}
 }
 
-fn load_portfolio_entries(data: &Vec<Crypto>, link: &AgentLink<LoadAgent>) {
-    for definition in data {
-        let api_key = definition.api_key.clone();
-        load_entries(api_key, link);
-    }
-}
+fn load_portfolio(api_key: String, price: &PricesData, link: &AgentLink<LoadAgent>) {
+    let current_price = price.market_data.current_price.eur;
 
-fn load_entries(api_key: String, link: &AgentLink<LoadAgent>) {
     link.send_future(async move {
         //url for request
-        let url_request = format!("{:}/definition/{:}", env!("API_URL"), &api_key);
+        let url_request = format!(
+            "{:}/portfolio/{:}/{:}",
+            env!("API_URL"),
+            &api_key,
+            current_price
+        );
         info!(&format!(
-            "Load Agent: {:} -> Loading entries: {:?}",
+            "Load Agent: {:} -> Loading portfolio entries: {:?}",
             &api_key, url_request
         ));
 
         // get request
-        let response = request_get::<Vec<Entry>>(url_request).await;
+        let response = request_get::<Portfolio>(url_request).await;
 
         // send response
         Message::PortfolioLoaded(api_key, response)

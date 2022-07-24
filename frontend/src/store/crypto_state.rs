@@ -5,14 +5,14 @@ use std::{
 
 use chrono::Local;
 
-use crate::models::{Crypto, Entry, PricesData};
+use crate::models::{Crypto, Portfolio, PricesData};
 
 #[derive(Clone, Default)]
 pub struct CryptoState {
     pub last_updated: Option<chrono::DateTime<Local>>,
     pub crypto_definitions: Option<Vec<Crypto>>,
     pub crypto_prices: HashMap<String, PricesData>,
-    pub portfolio: HashMap<String, Vec<Entry>>,
+    pub portfolio: HashMap<String, Portfolio>,
 }
 
 impl CryptoState {

@@ -9,3 +9,12 @@ pub struct Entry {
     pub price: BigDecimal,        // price in EUR
     pub purchase_fee: BigDecimal, // exchange fee in EUR
 }
+
+#[derive(Deserialize, Clone, PartialEq, Debug)]
+pub struct Portfolio {
+    pub definition_id: String,
+    pub entries: Vec<Entry>,
+    pub amount_sum: BigDecimal,
+    pub buy_price_sum: BigDecimal,
+    pub current_price_sum: BigDecimal,
+}

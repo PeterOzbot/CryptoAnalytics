@@ -1,7 +1,7 @@
 mod crypto;
-mod entry;
+mod portfolio;
 mod prices_data;
 
 pub use crypto::Crypto;
-pub use entry::Entry;
+pub use portfolio::{Entry, Portfolio};
 pub use prices_data::{Image, MarketData, Price, PricesData};

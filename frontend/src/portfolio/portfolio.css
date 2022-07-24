@@ -1,5 +1,10 @@
-.portfolio-container {
+.entries-container {
     display: flex;
     flex-direction: row;
     flex: 1 1 auto;
+}
+
+.sum-container {
+    display: flex;
+    flex-direction: column;
 }

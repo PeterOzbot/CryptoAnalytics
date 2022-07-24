@@ -1,8 +1,4 @@
-use bigdecimal::{BigDecimal, Zero};
-use std::{
-    ops::{Add, Mul, Sub},
-    rc::Rc,
-};
+use std::rc::Rc;
 use yew::{html, Context, Html};
 use yewdux::prelude::Dispatch;
 
@@ -49,18 +45,8 @@ impl yew::Component for Component {
 
         if let Some(state) = &self.state {
             if let Some(data) = state.portfolio.get(crypto_key) {
-                let mut sum_amount: BigDecimal = BigDecimal::zero();
-                let mut sum_price: BigDecimal = BigDecimal::zero();
-
                 let mut entries_html: Vec<Html> = vec![];
-                for entry in data {
-                    sum_amount = sum_amount.add(&entry.amount);
-
-                    let amount = &entry.amount.clone().sub(&entry.withdraw_fee);
-                    let price = amount.mul(&entry.price);
-                    let final_price = price.sub(&entry.purchase_fee);
-                    sum_price = sum_price.add(final_price);
-
+                for entry in &data.entries {
                     entries_html.push(html! {
                        <div class="ledger-entry">
                             <div class="amount">{&entry.amount}</div>
@@ -74,8 +60,8 @@ impl yew::Component for Component {
                         <div>{crypto_key}</div>
                         <div>{entries_html}</div>
                         <div class="ledger-sum">
-                            <div class="amount">{sum_amount}</div>
-                            <div class="price">{sum_price}</div>
+                            <div class="amount">{&data.amount_sum}</div>
+                            <div class="price">{&data.buy_price_sum}</div>
                         </div>
                     </div>
                 };

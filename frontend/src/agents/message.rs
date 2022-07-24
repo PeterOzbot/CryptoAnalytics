@@ -1,11 +1,11 @@
 use crate::{
     common::Error,
-    models::{Crypto, Entry, PricesData},
+    models::{Crypto, Portfolio, PricesData},
 };
 
 pub enum Message {
     Reload,
-    PortfolioLoaded(String, Result<Vec<Entry>, Error>),
+    PortfolioLoaded(String, Result<Portfolio, Error>),
     DefinitionsLoaded(Result<Vec<Crypto>, Error>),
     PricesLoaded(String, Result<PricesData, Error>),
 }
