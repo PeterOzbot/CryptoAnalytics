@@ -1,10 +1,37 @@
+.portfolio-page {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+}
+
 .entries-container {
     display: flex;
     flex-direction: row;
-    flex: 1 1 auto;
+    flex-wrap: wrap;
 }
 
 .sum-container {
     display: flex;
     flex-direction: column;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.sum-container .current-value {
+    text-align: center;
+    font-size: 42px;
+    margin: 25px;
+    margin-bottom: 10px;
+    color: #0E86D4;
+}
+
+.sum-container .profit-container {
+    display: flex;
+    flex-direction: row;
+    font-size: 20px;
+    margin-bottom: 25px;
+}
+
+.sum-container .profit-container .purchase-value {
+    margin-right: 10px;
 }

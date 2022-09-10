@@ -1,40 +1,88 @@
-.ledger-column {
-    margin: 20px;
-    flex-grow: 1;
-    flex-shrink: 1;
-    display: flex;
-    flex-flow: column;
+.ledger-row-container {
+
+    flex-basis: 50%;
 }
 
-.ledger-column .loading-info {
+.ledger-row {
+    display: flex;
+
+    margin: 5px;
+    margin-left: 50px;
+    margin-right: 50px;
+    padding: 5px;
+
+    background-color: #F2F3F4;
+    border-radius: 10px;
+    border-style: solid;
+    border-width: 1px;
+    border-color: #CDD0CB;
+
+    align-items: center;
+}
+
+.ledger-row .loading-info {
+    height: 72px;
     display: flex;
     align-items: center;
     justify-content: center;
+    margin-left: 30px;
 }
 
-.ledger-column .ledger-entry {
+.ledger-row .ledger-sum {
     display: flex;
     flex-flow: row;
 }
 
-.ledger-column .ledger-entry .amount {
+.ledger-row img {
+    margin-right: 20px;
+    margin-left: 10px;
+    width: 35px;
+    height: 35px;
+}
+
+.ledger-row .amount {
     margin-right: 2px;
+    font-size: 32px;
+    color: #515A5A;
+    width: 265px;
 }
 
-.ledger-column .ledger-entry .price {
-    margin-left: 2px;
+.ledger-row .price {
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
 }
 
-.ledger-column .ledger-sum {
-    margin-top: 10px;
+.ledger-row .price .current_price {
+    font-size: 26px;
+    margin: 10px;
+    margin-bottom: 5px;
+    color: #0E86D4;
+}
+
+.ledger-row .price .profit-container {
+    display: flex;
+    flex-direction: row;
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+
+
+
+
+
+.ledger-row .ledger-entry {
     display: flex;
     flex-flow: row;
 }
 
-.ledger-column .ledger-sum .amount {
+.ledger-row .ledger-entry .amount {
     margin-right: 2px;
 }
 
-.ledger-column .ledger-sum .price {
+.ledger-row .ledger-entry .price {
     margin-left: 2px;
 }

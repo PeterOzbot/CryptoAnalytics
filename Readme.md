@@ -80,6 +80,7 @@ psql -h localhost -p 5432 -U postgres -a -f schema.sql -f data.sql;
 *Connect with psql*
 ```
 psql -h localhost -p 5432 -U postgres
+psql -h localhost -p 1010 -U postgres
 ```
 *Connect to database && Execute script from file*
 ```

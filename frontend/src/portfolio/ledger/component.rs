@@ -1,8 +1,9 @@
 use std::rc::Rc;
-use yew::{html, Context, Html};
+use yew::{classes, Context};
 use yewdux::prelude::Dispatch;
 
 use crate::{
+    common::FormattedPortfolio,
     models::Crypto,
     store::{CryptoState, CryptoStore},
 };
@@ -45,32 +46,47 @@ impl yew::Component for Component {
 
         if let Some(state) = &self.state {
             if let Some(data) = state.portfolio.get(crypto_key) {
-                let mut entries_html: Vec<Html> = vec![];
-                for entry in &data.entries {
-                    entries_html.push(html! {
-                       <div class="ledger-entry">
-                            <div class="amount">{&entry.amount}</div>
-                            <div class="price">{&entry.price}</div>
-                       </div>
-                    });
-                }
+                if let Some(price) = state.crypto_prices.get(crypto_key) {
+                    // // TODO: use this..
+                    // let mut entries_html: Vec<Html> = vec![];
+                    // for entry in &data.entries {
+                    //     entries_html.push(html! {
+                    //        <div class="ledger-entry">
+                    //             <div class="amount">{&entry.amount}</div>
+                    //             <div class="price">{&entry.price}</div>
+                    //        </div>
+                    //     });
+                    // }
 
-                return yew::html! {
-                    <div class="ledger-column">
-                        <div>{crypto_key}</div>
-                        <div>{entries_html}</div>
-                        <div class="ledger-sum">
-                            <div class="amount">{&data.amount_sum}</div>
-                            <div class="price">{&data.buy_price_sum}</div>
+                    // format amounts
+                    let formatted_amounts = FormattedPortfolio::formatted_portfolio(
+                        &data.purchase_price_sum,
+                        &data.current_price_sum,
+                    );
+
+                    return yew::html! {
+                        <div class="ledger-row-container">
+                            <div class="ledger-row">
+                                <img alt={crypto_key.clone()} src={price.image.thumb.clone()}/>
+
+                                <div class="amount">{&data.amount_sum}</div>
+
+                                <div class="price">
+                                    <div class="current_price">{formatted_amounts.current_value} {"€"}</div>
+                                    <div class="profit-container">
+                                        <div class={classes!(&formatted_amounts.change_direction,"purchase-value")}>{formatted_amounts.purchase_value} {"€"}</div>
+                                        <div class={classes!(&formatted_amounts.change_direction)}>{formatted_amounts.change}</div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                };
+                    };
+                }
             }
         }
 
         return yew::html! {
-            <div class="ledger-column">
-                <div>{crypto_key}</div>
+            <div class="ledger-row">
                 <div class="loading-info">
                     <div class="stage">
                         <div class="dot-carousel"></div>

@@ -4,7 +4,7 @@ use yew::{classes, Context};
 use yewdux::prelude::Dispatch;
 
 use crate::{
-    common::FormattedPrice,
+    common::FormattedPriceData,
     models::Crypto,
     store::{CryptoState, CryptoStore},
 };
@@ -54,7 +54,7 @@ impl yew::Component for Component {
                 let prices_data = state.crypto_prices.get(&properties.definition.api_key);
                 if let Some(data) = prices_data {
                     let formatted_price =
-                        FormattedPrice::format_data(data, properties.definition.precision);
+                        FormattedPriceData::format_data(data, properties.definition.precision);
 
                     // construct HTML
                     html = yew::html! {

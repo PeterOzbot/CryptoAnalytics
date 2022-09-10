@@ -1,15 +1,15 @@
 use super::PriceFormatting;
 use crate::models::PricesData;
 
-pub struct FormattedPrice {
+pub struct FormattedPriceData {
     pub value: String,
     pub change_direction: String,
     pub change: String,
 }
 
-impl FormattedPrice {
-    pub fn format_data(api_data: &PricesData, precision: i16) -> FormattedPrice {
-        FormattedPrice {
+impl FormattedPriceData {
+    pub fn format_data(api_data: &PricesData, precision: i16) -> FormattedPriceData {
+        FormattedPriceData {
             value: PriceFormatting::format_price(api_data.market_data.current_price.eur, precision),
             change_direction: PriceFormatting::handle_price_change(
                 api_data.market_data.price_change_24h_in_currency.eur,
@@ -33,9 +33,14 @@ impl FormattedPrice {
         price_change: f64,
         use_absolute: bool,
         precision: i16,
-    ) -> FormattedPrice {
-        FormattedPrice {
-            value: FormattedPrice::get_price(current_price, price_change, use_absolute, precision),
+    ) -> FormattedPriceData {
+        FormattedPriceData {
+            value: FormattedPriceData::get_price(
+                current_price,
+                price_change,
+                use_absolute,
+                precision,
+            ),
             change_direction: PriceFormatting::handle_price_change(price_change),
             change: format!("({:.2}%)", price_change,),
         }

@@ -33,7 +33,7 @@ pub fn calculate_portfolio(
     Portfolio {
         definition_id: String::from(definition_id),
         amount_sum: sum_amount,
-        buy_price_sum: sum_price,
+        purchase_price_sum: sum_price,
         current_price_sum: current_price_sum,
         entries: portfolio_entries,
     }

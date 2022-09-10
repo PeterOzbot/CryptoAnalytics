@@ -3,7 +3,10 @@ use std::{ops::Add, rc::Rc};
 use yew::{classes, html, Context, Html};
 use yewdux::prelude::Dispatch;
 
-use crate::store::{CryptoState, CryptoStore};
+use crate::{
+    common::FormattedPortfolio,
+    store::{CryptoState, CryptoStore},
+};
 
 use super::message::Message;
 
@@ -48,14 +51,23 @@ impl yew::Component for Component {
 
         if let Some(state) = &self.state {
             if let Some(crypto_definitions) = &state.crypto_definitions {
-                let mut buy_price_sum: BigDecimal = BigDecimal::zero();
+                // calculate sums
+                let mut purchase_price_sum: BigDecimal = BigDecimal::zero();
                 let mut current_price_sum: BigDecimal = BigDecimal::zero();
 
                 for portfolio_entry in state.portfolio.values() {
-                    buy_price_sum = buy_price_sum.add(&portfolio_entry.buy_price_sum);
+                    purchase_price_sum =
+                        purchase_price_sum.add(&portfolio_entry.purchase_price_sum);
                     current_price_sum = current_price_sum.add(&portfolio_entry.current_price_sum);
                 }
 
+                // format sums
+                let formatted_sums = FormattedPortfolio::formatted_portfolio(
+                    &purchase_price_sum,
+                    &current_price_sum,
+                );
+
+                // generate definitions components
                 let portfolio_entries_html: Vec<Html> = crypto_definitions
                     .iter()
                     .map(|crypto_definition| {
@@ -65,14 +77,18 @@ impl yew::Component for Component {
                     })
                     .collect();
 
+                // combine whole page html
                 content_html = html! {
-                    <div>
-                        <div class={classes!("sum-container")}>
-                            <div>{"Bought: "}{buy_price_sum}</div>
-                            <div>{"Worth: "}{current_price_sum}</div>
+                    <div class="portfolio-page">
+                        <div class="sum-container">
+                            <div class="current-value">{formatted_sums.current_value} {"€"}</div>
+                            <div class="profit-container">
+                                <div class={classes!(&formatted_sums.change_direction,"purchase-value")}>{formatted_sums.purchase_value} {"€"}</div>
+                                <div class={classes!(&formatted_sums.change_direction)}>{formatted_sums.change}</div>
+                            </div>
                         </div>
 
-                        <div class={classes!("entries-container")}>
+                        <div class="entries-container">
                             {portfolio_entries_html}
                         </div>
                     </div>
@@ -81,9 +97,7 @@ impl yew::Component for Component {
         }
 
         html! {
-            <div>
-                {content_html}
-            </div>
+            {content_html}
         }
     }
 

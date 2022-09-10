@@ -1,7 +1,7 @@
 use yew::{classes, Context};
 
 use crate::{
-    common::FormattedPrice,
+    common::FormattedPriceData,
     models::{Crypto, Price},
 };
 
@@ -29,19 +29,19 @@ impl yew::Component for Component {
         let price_change = &properties.price_change;
         let current_price = &properties.current_price;
 
-        let formatted_price_eur = FormattedPrice::format_price(
+        let formatted_price_eur = FormattedPriceData::format_price(
             current_price.eur,
             price_change.eur,
             properties.use_absolute,
             properties.definition.precision,
         );
-        let formatted_price_btc = FormattedPrice::format_price(
+        let formatted_price_btc = FormattedPriceData::format_price(
             current_price.btc,
             price_change.btc,
             properties.use_absolute,
             6,
         );
-        let formatted_price_eth = FormattedPrice::format_price(
+        let formatted_price_eth = FormattedPriceData::format_price(
             current_price.eth,
             price_change.eth,
             properties.use_absolute,
