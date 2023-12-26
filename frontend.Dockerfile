@@ -1,5 +1,5 @@
 # This tells docker to use the Rust official image
-FROM rust:1.49 as build-step
+FROM rust:1.74 as build-step
 
 # update RUST and use nightly version
 RUN rustup default nightly

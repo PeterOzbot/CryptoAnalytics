@@ -129,8 +129,14 @@ impl Agent for LoadAgent {
             AgentRequest::Initialize => {
                 let interval_milliseconds = match env!("RELOAD_INTERVAL").parse::<u32>() {
                     Ok(value) => value,
-                    Err(_) => 2 * 60 * 1000,
+                    Err(_) => 0,
                 };
+
+                if interval_milliseconds == 0 {
+                    info!("Load Agent: Reload interval is disabled.");
+                    self.link.send_message(Message::Reload);
+                    return;
+                }
 
                 info!(&format!(
                     "Load Agent: Starting reload interval. Interval in milliseconds: {:}",
@@ -187,7 +193,7 @@ fn load_price(api_key: String, link: &AgentLink<LoadAgent>) {
     link.send_future(async move {
 
         // url for request
-        let url_request = format!("https://api.coingecko.com/api/v3/coins/{:}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false", &api_key);
+        let url_request = format!("https://api.coingecko.com/api/v3/coins/{:}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false&x_cg_demo_api_key={:}", &api_key, env!("COINGECKO_API_KEY"));
 
         info!(&format!(
             "Load Agent: {:} -> Loading data: {:?}",

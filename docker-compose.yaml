@@ -36,7 +36,8 @@ services:
       dockerfile: frontend.Dockerfile
       args:
         - API_URL=http://localhost:1020
-        - RELOAD_INTERVAL= 300000
+        - RELOAD_INTERVAL= 0
+        - COINGECKO_API_KEY = ****UPDATE****
     ports:
       - "1030:80"
     depends_on:

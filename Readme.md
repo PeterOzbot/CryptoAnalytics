@@ -4,6 +4,12 @@ Web app that displays analytics about some crypto coins.
 
 Written in Rust with Yew.
 
+### Environment variables
+
+**API_URL**: URL to the backend API<br>
+**RELOAD_INTERVAL**: In ms data refresh interval, if 0 no automatic data refresh<br>
+**COINGECKO_API_KEY**: API key for coingecko v3 **!!! set the variable before deploy !!!**
+
 # Resources:
 
 Crypto data:
@@ -48,6 +54,8 @@ sudo docker-compose stop
 ### Frontend:
 ```
 sudo docker build --build-arg API_URL=http://localhost:1020 --file=frontend.Dockerfile -t crypto-analytics-frontend ./
+
+sudo docker run -d -p 1030:80 -e API_URL='http://localhost:1020' --name crypto-analytics-frontend crypto-analytics-frontend:latest
 ```
 
 ### Backend
