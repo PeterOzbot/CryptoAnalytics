@@ -5,7 +5,7 @@ use std::{
 
 use chrono::Local;
 
-use crate::models::{Crypto, Portfolio, PricesData};
+use crate::models::{Crypto, GasPriceData, Portfolio, PricesData};
 
 #[derive(Clone, Default)]
 pub struct CryptoState {
@@ -13,6 +13,7 @@ pub struct CryptoState {
     pub crypto_definitions: Option<Vec<Crypto>>,
     pub crypto_prices: HashMap<String, PricesData>,
     pub portfolio: HashMap<String, Portfolio>,
+    pub gas_price: Option<GasPriceData>,
 }
 
 impl CryptoState {
@@ -22,6 +23,7 @@ impl CryptoState {
             crypto_definitions: None,
             crypto_prices: HashMap::new(),
             portfolio: HashMap::new(),
+            gas_price: None,
         }
     }
 }

@@ -2,9 +2,33 @@
     margin-bottom: 5px;
     background-color: #A7BBC7;
 
+    display: flex;
+
     flex-basis: auto;
     flex-grow: 0;
     flex-shrink: 1;
+
+    flex-direction: row;
+}
+
+.page-header .tabs {
+    display: flex;
+    flex-direction: row;
+    border-right: 1px solid #CDD0CB;
+    font-size: 20px;
+}
+
+.page-header .tabs>* {
+    padding: 10px;
+    border-left: 1px solid #CDD0CB;
+
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.page-header .tabs>.selected {
+    background-color: #CDD0CB;
 }
 
 .updated {

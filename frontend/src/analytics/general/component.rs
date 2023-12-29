@@ -37,7 +37,7 @@ impl yew::Component for Component {
     fn view(&self, _ctx: &Context<Self>) -> yew::Html {
         let properties = _ctx.props();
         let mut html = yew::html! {
-            <div class="general-row">
+        <div class="general-row">
             <div class="loading-info">
                 <div class="stage">
                     <div class="dot-carousel"></div>

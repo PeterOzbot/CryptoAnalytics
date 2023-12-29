@@ -5,7 +5,7 @@ use yewdux::prelude::{Dispatch, Dispatcher};
 
 use crate::{
     common::request_get,
-    models::{Crypto, Portfolio, PricesData},
+    models::{Crypto, GasPriceData, Image, MarketData, Portfolio, Price, PricesData},
     store::{CryptoState, CryptoStore},
 };
 
@@ -57,6 +57,9 @@ impl Agent for LoadAgent {
 
                     Message::DefinitionsLoaded(response)
                 });
+
+                // load gas price
+                load_gas_price(&self.link);
             }
             Message::DefinitionsLoaded(resp) => match resp {
                 Ok(data) => {
@@ -118,6 +121,25 @@ impl Agent for LoadAgent {
                     info!(&format!(
                         "Load Agent: {:} -> Entries, Response error: {:}",
                         id, error
+                    ));
+                }
+            },
+            Message::GasPriceLoaded(resp) => match resp {
+                Ok(data) => {
+                    info!(&format!(
+                        "Load Agent: Gas price -> Loaded data: {:?}",
+                        &data
+                    ));
+
+                    // update state
+                    self.dispatch.reduce(|state: &mut CryptoState| {
+                        state.gas_price = Some(data);
+                    });
+                }
+                Err(error) => {
+                    info!(&format!(
+                        "Load Agent: Gas price -> Response error: {:}",
+                        error
                     ));
                 }
             },
@@ -191,19 +213,84 @@ fn load_prices(data: &Vec<Crypto>, link: &AgentLink<LoadAgent>) {
 
 fn load_price(api_key: String, link: &AgentLink<LoadAgent>) {
     link.send_future(async move {
+        // // url for request
+        // let url_request = format!("https://api.coingecko.com/api/v3/coins/{:}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false&x_cg_demo_api_key={:}", &api_key, env!("COINGECKO_API_KEY"));
 
-        // url for request
-        let url_request = format!("https://api.coingecko.com/api/v3/coins/{:}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false&x_cg_demo_api_key={:}", &api_key, env!("COINGECKO_API_KEY"));
+        // info!(&format!(
+        //     "Load Agent: {:} -> Loading prices: {:?}",
+        //     &api_key, url_request
+        // ));
 
-        info!(&format!(
-            "Load Agent: {:} -> Loading data: {:?}",
-            &api_key, url_request
-        ));
+        // // get request
+        //let response = request_get::<PricesData>(url_request).await;
 
-        // get request
-        let response = request_get::<PricesData>(url_request).await;
+        let response = Ok(create_fake_api_response(&api_key));
 
         // send response
-        Message::PricesLoaded(api_key,response)
+        Message::PricesLoaded(api_key, response)
     });
+}
+
+fn load_gas_price(link: &AgentLink<LoadAgent>) {
+    link.send_future(async move {
+        // url for request
+        let url_request = format!(
+            "https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey={:}",
+            env!("ETHERSCAN_API_KEY")
+        );
+
+        info!(&format!("Load Agent: Loading gas price: {:?}", url_request));
+
+        // get request
+        let response = request_get::<GasPriceData>(url_request).await;
+
+        // send response
+        Message::GasPriceLoaded(response)
+    });
+}
+
+fn create_fake_api_response(api_key: &String) -> PricesData {
+    PricesData {
+        id: api_key.clone(),
+        image: Image {
+            thumb: String::new(),
+        },
+        market_data: MarketData {
+            current_price: Price {
+                eur: 1000.0,
+                btc: 0.0,
+                eth: 0.0,
+            },
+            price_change_24h_in_currency: Price {
+                eur: 0.0,
+                btc: 0.0,
+                eth: 0.0,
+            },
+            price_change_percentage_24h_in_currency: Price {
+                eur: 0.0,
+                btc: 0.0,
+                eth: 0.0,
+            },
+            price_change_percentage_7d_in_currency: Price {
+                eur: 0.0,
+                btc: 0.0,
+                eth: 0.0,
+            },
+            price_change_percentage_30d_in_currency: Price {
+                eur: 0.0,
+                btc: 0.0,
+                eth: 0.0,
+            },
+            price_change_percentage_200d_in_currency: Price {
+                eur: 0.0,
+                btc: 0.0,
+                eth: 0.0,
+            },
+            price_change_percentage_1y_in_currency: Price {
+                eur: 0.0,
+                btc: 0.0,
+                eth: 0.0,
+            },
+        },
+    }
 }

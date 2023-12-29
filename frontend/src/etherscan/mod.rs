@@ -1,5 +1,5 @@
 mod component;
+mod gas;
 mod message;
-mod tab;
 
 pub use component::Component;

@@ -5,9 +5,9 @@ mod agents;
 mod analytics;
 mod application;
 mod common;
+mod etherscan;
 mod models;
 mod portfolio;
-mod routing;
 mod store;
 
 use wasm_bindgen::prelude::wasm_bindgen;

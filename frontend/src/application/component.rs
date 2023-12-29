@@ -2,22 +2,22 @@ use std::rc::Rc;
 
 use yew::prelude::*;
 use yew_agent::Dispatched;
-use yew_router::prelude::*;
 use yewdux::prelude::Dispatch;
 
 use crate::agents::AgentRequest;
 use crate::agents::LoadAgent;
-use crate::analytics;
-use crate::portfolio;
-use crate::routing::ApplicationRoutes;
+use crate::application::tab::get_tab_buttons;
+use crate::application::tab::get_tab_content;
 use crate::store::{CryptoState, CryptoStore};
 
 use super::message::Message;
+use super::tab::Tab;
 
 pub struct Component {
     _dispatch: Dispatch<CryptoStore>,
     _agent: yew_agent::Dispatcher<LoadAgent>,
     state: Option<Rc<CryptoState>>,
+    tab: Option<Tab>,
 }
 
 impl yew::Component for Component {
@@ -34,6 +34,7 @@ impl yew::Component for Component {
             _dispatch: dispatch,
             _agent: agent,
             state: None,
+            tab: Some(Tab::Analytics),
         }
     }
 
@@ -41,6 +42,9 @@ impl yew::Component for Component {
         match msg {
             Message::State(state) => {
                 self.state = Some(state);
+            }
+            Message::TabChange(tab) => {
+                self.tab = Some(tab);
             }
         }
         true
@@ -60,30 +64,34 @@ impl yew::Component for Component {
             }
         }
 
+        let mut tab_content: Html = html! {};
+        if let Some(tab) = &self.tab {
+            tab_content = get_tab_content(tab);
+        }
+
+        let link: html::Scope<Component> = _ctx.link().clone();
+        let tab_buttons = get_tab_buttons(&link, &self.tab);
+
+        // let mut tab_content: Html = html! {};
+        // let link = _ctx.link().clone();
+        // tab_content = html! {
+        //     <div class="tabs">
+        //         {get_tab_button(&link, &Tab::Analytics, "selected")}
+        //         {get_tab_button(&link, &Tab::Portfolio, "")}
+        //         {get_tab_button(&link, &Tab::Etherscan, "")}
+        //     </div>
+        // };
+
         html! {
            <div class="main-container">
                <div class="page-header">
-                   <div class="updated">{"Updated at: "}{formatted_last_updated}</div>
+                <div class="updated">{"Updated at: "}{formatted_last_updated}</div>
+                    {tab_buttons}
                </div>
 
                <div class="page-content">
-                <BrowserRouter>
-                    <Switch<ApplicationRoutes> render={Switch::render(move |routes| {
-                        match routes {
-                            ApplicationRoutes::Home => {
-                                html! {
-                                    <analytics::Component/>
-                                }
-                            }
-                            ApplicationRoutes::Portfolio => {
-                                html! {
-                                    <portfolio::Component/>
-                                }
-                            }
-                        }
-                    })}/>
-                </BrowserRouter>
-                </div>
+                    {tab_content}
+               </div>
             </div>
         }
     }

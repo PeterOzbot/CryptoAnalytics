@@ -47,17 +47,6 @@ impl yew::Component for Component {
         if let Some(state) = &self.state {
             if let Some(data) = state.portfolio.get(crypto_key) {
                 if let Some(price) = state.crypto_prices.get(crypto_key) {
-                    // // TODO: use this..
-                    // let mut entries_html: Vec<Html> = vec![];
-                    // for entry in &data.entries {
-                    //     entries_html.push(html! {
-                    //        <div class="ledger-entry">
-                    //             <div class="amount">{&entry.amount}</div>
-                    //             <div class="price">{&entry.price}</div>
-                    //        </div>
-                    //     });
-                    // }
-
                     // format amounts
                     let formatted_amounts = FormattedPortfolio::formatted_portfolio(
                         &data.purchase_price_sum,
@@ -86,10 +75,12 @@ impl yew::Component for Component {
         }
 
         return yew::html! {
-            <div class="ledger-row">
-                <div class="loading-info">
-                    <div class="stage">
-                        <div class="dot-carousel"></div>
+            <div class="ledger-row-container">
+                <div class="ledger-row">
+                    <div class="loading-info">
+                        <div class="stage">
+                            <div class="dot-carousel"></div>
+                        </div>
                     </div>
                 </div>
             </div>

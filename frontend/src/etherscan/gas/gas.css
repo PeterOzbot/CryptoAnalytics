@@ -1,0 +1,68 @@
+.gas-row {
+    display: flex;
+
+    margin: 5px;
+    margin-left: 50px;
+    margin-right: 50px;
+    padding: 5px;
+
+    background-color: #F2F3F4;
+    border-radius: 10px;
+    border-style: solid;
+    border-width: 1px;
+    border-color: #CDD0CB;
+
+    align-items: center;
+
+    height: 72px;
+}
+
+.gas-row .loading-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 30px;
+}
+
+.gas-row .values-container {
+    display: flex;
+    flex: 1;
+    flex-direction: row;
+}
+
+.gas-row .values-container .input {
+    flex: 1;
+    margin-left: 10px;
+    margin-right: 10px;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+}
+
+.gas-row .values-container .value {
+    flex: 1;
+    margin-left: 10px;
+    margin-right: 10px;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+}
+
+.gas-row .values-container .value .title {
+    justify-content: center;
+    display: flex;
+}
+
+.gas-row .values-container .value .price {
+    font-size: 28px;
+    justify-content: center;
+    display: flex;
+}
+
+.gas-row .values-container .value .price .gas-price {
+    margin-right: 20px;
+}
+
+.gas-row .values-container .value .price .eur-price {
+    opacity: 0.5;
+}

@@ -9,6 +9,7 @@ Written in Rust with Yew.
 **API_URL**: URL to the backend API<br>
 **RELOAD_INTERVAL**: In ms data refresh interval, if 0 no automatic data refresh<br>
 **COINGECKO_API_KEY**: API key for coingecko v3 **!!! set the variable before deploy !!!**
+**ETHERSCAN_API_KEY**: API kej for ether scan **!!! set the variable before deploy !!!**
 
 # Resources:
 
