@@ -1,5 +1,6 @@
 {
     "cSpell.words": [
+        "Behaviour",
         "bigdecimal",
         "bindgen",
         "bitcoincash",
@@ -11,6 +12,7 @@
         "gloo",
         "litecoin",
         "onclick",
+        "oninput",
         "peterozbot",
         "psql",
         "reqwest",
