@@ -5,5 +5,5 @@ mod prices_data;
 
 pub use crypto::Crypto;
 pub use gas_price_data::{GasPrice, GasPriceData};
-pub use portfolio::{Entry, Portfolio};
+pub use portfolio::Portfolio;
 pub use prices_data::{Image, MarketData, Price, PricesData};
