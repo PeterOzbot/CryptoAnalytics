@@ -5,7 +5,7 @@ use yewdux::prelude::{Dispatch, Dispatcher};
 
 use crate::{
     common::request_get,
-    models::{Crypto, GasPriceData, Image, MarketData, Portfolio, Price, PricesData},
+    models::{Crypto, GasPrice, GasPriceData, Image, MarketData, Portfolio, Price, PricesData},
     store::{CryptoState, CryptoStore},
 };
 
@@ -213,18 +213,29 @@ fn load_prices(data: &Vec<Crypto>, link: &AgentLink<LoadAgent>) {
 
 fn load_price(api_key: String, link: &AgentLink<LoadAgent>) {
     link.send_future(async move {
-        // // url for request
-        // let url_request = format!("https://api.coingecko.com/api/v3/coins/{:}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false&x_cg_demo_api_key={:}", &api_key, env!("COINGECKO_API_KEY"));
+        let coingecko_api = env!("COINGECKO_API_KEY");
+        if coingecko_api == "****UPDATE****"{
+            let response = Ok(create_fake_api_response(&api_key));
 
-        // info!(&format!(
-        //     "Load Agent: {:} -> Loading prices: {:?}",
-        //     &api_key, url_request
-        // ));
+            info!(&format!(
+                "Load Agent: {:} -> Loading fake prices",
+                &api_key
+            ));
 
-        // // get request
-        //let response = request_get::<PricesData>(url_request).await;
+            // send response
+            return Message::PricesLoaded(api_key, response);
+        }
 
-        let response = Ok(create_fake_api_response(&api_key));
+        // url for request
+        let url_request = format!("https://api.coingecko.com/api/v3/coins/{:}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false&x_cg_demo_api_key={:}", &api_key, coingecko_api);
+
+        info!(&format!(
+            "Load Agent: {:} -> Loading prices: {:?}",
+            &api_key, url_request
+        ));
+
+        // get request
+        let response = request_get::<PricesData>(url_request).await;
 
         // send response
         Message::PricesLoaded(api_key, response)
@@ -233,10 +244,27 @@ fn load_price(api_key: String, link: &AgentLink<LoadAgent>) {
 
 fn load_gas_price(link: &AgentLink<LoadAgent>) {
     link.send_future(async move {
+        let etherscan_api_key = env!("ETHERSCAN_API_KEY");
+        if etherscan_api_key == "****UPDATE****" {
+            let response = Ok(GasPriceData {
+                message: "OK".to_string(),
+                result: GasPrice {
+                    safe_gas_price: "100".to_string(),
+                    propose_gas_price: "100".to_string(),
+                    fast_gas_price: "100".to_string(),
+                },
+            });
+
+            info!(&format!("Load Agent: Loading fake gas price"));
+
+            // send response
+            return Message::GasPriceLoaded(response);
+        }
+
         // url for request
         let url_request = format!(
             "https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey={:}",
-            env!("ETHERSCAN_API_KEY")
+            etherscan_api_key
         );
 
         info!(&format!("Load Agent: Loading gas price: {:?}", url_request));

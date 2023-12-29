@@ -12,7 +12,7 @@
     border-width: 1px;
     border-color: #CDD0CB;
 
-    align-items: center;
+    /*align-items: center;*/
 
     height: 72px;
 }
@@ -30,20 +30,34 @@
     flex-direction: row;
 }
 
-.gas-row .values-container .input {
-    flex: 1;
+.gas-row .values-container .gas-limit-input {
     margin-left: 10px;
     margin-right: 10px;
-    justify-content: center;
     display: flex;
     flex-direction: column;
+}
+
+.gas-row .values-container .gas-limit-input .title {
+    display: flex;
+    justify-content: center;
+}
+
+.gas-row .values-container .gas-limit-input .input-container {
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    flex: 1;
+}
+
+.gas-row .values-container .gas-limit-input .input-container input {
+    font-size: 20px;
+    margin-top: 10px;
 }
 
 .gas-row .values-container .value {
     flex: 1;
     margin-left: 10px;
     margin-right: 10px;
-    justify-content: center;
     display: flex;
     flex-direction: column;
 }
@@ -56,7 +70,9 @@
 .gas-row .values-container .value .price {
     font-size: 28px;
     justify-content: center;
+    align-items: center;
     display: flex;
+    flex: 1;
 }
 
 .gas-row .values-container .value .price .gas-price {
