@@ -12,7 +12,7 @@ impl PriceFormatting {
 
         let policy = SeparatorPolicy {
             separator: ",",
-            groups: &[3, 2],
+            groups: &[3],
             digits: digits::ASCII_DECIMAL,
         };
 
