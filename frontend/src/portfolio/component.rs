@@ -8,6 +8,8 @@ use crate::{
     store::{CryptoState, CryptoStore},
 };
 
+use std::ops::Sub;
+
 use super::message::Message;
 
 use load_dotenv::load_dotenv;
@@ -56,15 +58,22 @@ impl yew::Component for Component {
                 let mut current_price_sum: BigDecimal = BigDecimal::zero();
 
                 for portfolio_entry in state.portfolio.values() {
-                    purchase_price_sum =
-                        purchase_price_sum.add(&portfolio_entry.purchase_price_sum);
-                    current_price_sum = current_price_sum.add(&portfolio_entry.current_price_sum);
+                    let purchase_minus_sold_price: &BigDecimal = &portfolio_entry
+                        .bought_fiat_price_sum
+                        .clone()
+                        .sub(&portfolio_entry.sold_fiat_average_price);
+
+                    purchase_price_sum = purchase_price_sum.add(purchase_minus_sold_price);
+                    current_price_sum =
+                        current_price_sum.add(&portfolio_entry.fiat_current_total_price);
                 }
 
                 // format sums
                 let formatted_sums = FormattedPortfolio::formatted_portfolio(
                     &purchase_price_sum,
                     &current_price_sum,
+                    &BigDecimal::zero(),
+                    &BigDecimal::zero(),
                 );
 
                 // generate definitions components

@@ -23,7 +23,7 @@ impl Provider {
         query_as!(
             Entry,
             r#"
-            SELECT id, definition_id, date_time, amount, withdraw_fee, price, purchase_fee from entries
+            SELECT id, definition_id, date_time, amount, withdraw_fee, price, transaction_fee, transaction_type from entries
             WHERE definition_id = $1
             "#,
             definition_id

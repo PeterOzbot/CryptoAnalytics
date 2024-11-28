@@ -25,7 +25,7 @@ impl Endpoints {
         let price = req.param("price")?;
 
         let entries = Provider::get_entries(definition_id, &req.state().db_pool.clone()).await?;
-        let portfolio = calculate_portfolio(definition_id, entries, price);
+        let portfolio = calculate_portfolio(definition_id, entries.as_slice(), price);
 
         let mut res = Response::new(200);
         res.set_body(Body::from_json(&portfolio)?);

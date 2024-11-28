@@ -49,8 +49,10 @@ impl yew::Component for Component {
                 if let Some(price) = state.crypto_prices.get(crypto_key) {
                     // format amounts
                     let formatted_amounts = FormattedPortfolio::formatted_portfolio(
-                        &data.purchase_price_sum,
-                        &data.current_price_sum,
+                        &data.bought_fiat_price_sum,
+                        &data.fiat_current_total_price,
+                        &data.sold_fiat_average_price,
+                        &data.sold_fiat_price_sum,
                     );
 
                     return yew::html! {
@@ -58,13 +60,17 @@ impl yew::Component for Component {
                             <div class="ledger-row">
                                 <img alt={crypto_key.clone()} src={price.image.thumb.clone()}/>
 
-                                <div class="amount">{&data.amount_sum}</div>
+                                <div class="amount">{&data.crypto_amount_sum}</div>
 
                                 <div class="price">
                                     <div class="current_price">{formatted_amounts.current_value} {"€"}</div>
                                     <div class="profit-container">
                                         <div class={classes!(&formatted_amounts.change_direction,"purchase-value")}>{formatted_amounts.purchase_value} {"€"}</div>
                                         <div class={classes!(&formatted_amounts.change_direction)}>{formatted_amounts.change}</div>
+                                    </div>
+                                    <div class="profit-container">
+                                        <div class={classes!(&formatted_amounts.sold_change_direction,"purchase-value")}>{formatted_amounts.sold_value} {"€"}</div>
+                                        <div class={classes!(&formatted_amounts.sold_change_direction)}>{formatted_amounts.sold_change}</div>
                                     </div>
                                 </div>
                             </div>

@@ -1,0 +1,64 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT id, definition_id, date_time, amount, withdraw_fee, price, transaction_fee, transaction_type from entries\n            WHERE definition_id = $1\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "definition_id",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "date_time",
+        "type_info": "Timestamp"
+      },
+      {
+        "ordinal": 3,
+        "name": "amount",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 4,
+        "name": "withdraw_fee",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 5,
+        "name": "price",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 6,
+        "name": "transaction_fee",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 7,
+        "name": "transaction_type",
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "a9a6cc9f6a35228aa4785103e4dc10eed0c32a20d48661eb152998ba1124ac63"
+}

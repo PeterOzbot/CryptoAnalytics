@@ -5,12 +5,22 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Debug Rust Backend",
             "type": "lldb",
             "request": "launch",
-            "name": "Debug",
-            "program": "${workspaceFolder}/<your program>",
+            "program": "${workspaceFolder}/backend/target/debug/backend",
             "args": [],
-            "cwd": "${workspaceFolder}"
+            "cwd": "${workspaceFolder}/backend",
+            "stopOnEntry": false,
+            "sourceLanguages": [
+                "rust"
+            ],
+            "env": {
+                "RUST_LOG": "debug",
+                "DATABASE_URL": "postgres://postgres:postgres@localhost:1010/crypto_analytics",
+                "SERVER_URL": "localhost:8000"
+            },
+            "console": "integratedTerminal"
         }
     ]
 }

@@ -9,8 +9,9 @@ CREATE TABLE entries(
     id uuid NOT NULL PRIMARY KEY,
     definition_id text NOT NULL REFERENCES definitions (api_key),
     date_time timestamp NOT NULL,
-    amount NUMERIC(19, 12) NOT NULL,
-    withdraw_fee NUMERIC(19, 12) NOT NULL,
-    price NUMERIC(19, 12) NOT NULL,
-    purchase_fee NUMERIC(19, 12) NOT NULL
+    amount NUMERIC(19, 12) NOT NULL, -- in crypto
+    withdraw_fee NUMERIC(19, 12) NOT NULL, -- in crypto
+    price NUMERIC(19, 12) NOT NULL, -- in eur
+    transaction_fee NUMERIC(19, 12) NOT NULL, -- in eur
+    transaction_type TEXT NOT NULL
 );
