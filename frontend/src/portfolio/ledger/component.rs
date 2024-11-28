@@ -65,11 +65,11 @@ impl yew::Component for Component {
                                 <div class="price">
                                     <div class="current_price">{formatted_amounts.current_value} {"€"}</div>
                                     <div class="profit-container">
-                                        <div class={classes!(&formatted_amounts.change_direction,"purchase-value")}>{formatted_amounts.purchase_value} {"€"}</div>
+                                        <div class={classes!(&formatted_amounts.change_direction,"value")}>{formatted_amounts.purchase_value} {"€"}</div>
                                         <div class={classes!(&formatted_amounts.change_direction)}>{formatted_amounts.change}</div>
                                     </div>
                                     <div class="profit-container">
-                                        <div class={classes!(&formatted_amounts.sold_change_direction,"purchase-value")}>{formatted_amounts.sold_value} {"€"}</div>
+                                        <div class={classes!(&formatted_amounts.sold_change_direction,"value")}>{formatted_amounts.sold_value} {"€"}</div>
                                         <div class={classes!(&formatted_amounts.sold_change_direction)}>{formatted_amounts.sold_change}</div>
                                     </div>
                                 </div>
